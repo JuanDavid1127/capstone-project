@@ -19,7 +19,7 @@ app.get('/students', authenticateToken, (req, res) => {
     res.json(students);
 })
 
-app.post('/advisers',authenticateToken , async (req, res) => {
+app.post('/advisers', authenticateToken, async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const stmt = schoolDb.prepare('INSERT INTO advisers(username, password_hash, full_name, assigned_level) VALUES (?, ?, ?, ?)');
     res.send(stmt.run(req.body.username, hashedPassword, req.body.full_name, req.body.assigned_level));
