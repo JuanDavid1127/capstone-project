@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Adviser Dashboard</title>
+<link rel="stylesheet" href="/capstone-project/frontend/css/dashboard.css">
+</head>
+<body>
+<header>
+  <div class="wrapper header">
+    <div class="brand">
+      <div class="logo"><img class="logo-img" src="/capstone-project/src/img/Group 2.png" alt=""></div>
+      <div><strong>Colegio de San Pascual Baylon</strong><small>Obando, Bulacan</small></div>
+    </div>
+    <div class="profile">
+      <img src="/capstone-project/src/img/vecteezy_profile-default-icon-design-template_50018408.jpg" alt="Adviser profile">
+      <div><strong>Bernard Capalad</strong><small>Adviser · Grade 10</small></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrapper">
+  <div class="toolbar">
+    <label class="search">⌕ <input id="search" type="search" placeholder="Search students..."></label>
+    <div><b>Grade 10</b> <span id="count">0 of 40 students</span></div>
+  </div>
+
+  <div class="dashboard">
+    <section>
+      <div class="heading"><div><h1>Students</h1><p>Unassigned students</p></div><span>UNASSIGNED</span></div>
+      <div class="table-box"><table>
+        <thead><tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th></th></tr></thead>
+        <tbody id="available"></tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <div class="heading"><div><h1>Assigned Students</h1><p>Students assigned to your section</p></div><span class="green">SECTION</span></div>
+      <div class="table-box"><table>
+        <thead><tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th></th></tr></thead>
+        <tbody id="assigned"></tbody>
+      </table></div>
+    </section>
+  </div>
+
+  <div class="footer">
+    <p id="status">Select students to assign them to your section.</p>
+    <button id="save">Accept Assignments</button>
+  </div>
+</main>
+
+<script>
+
+</script>
+</body>
+</html>
