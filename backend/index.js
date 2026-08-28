@@ -13,13 +13,13 @@ app.post( '/students', (req, res) => {
     res.send(stmt.run(req.body.name, req.body.lrn, req.body.gender, req.body.grade_level));
 })
 
-app.get('/students', (req, res) => {
+app.get('/students', authenticateToken, (req, res) => {
     const stmt = schoolDb.prepare(`SELECT * FROM students WHERE grade_level = ? AND adviser_id IS NULL`);
     const students = stmt.all(req.query.grade_level);
     res.json(students);
 })
 
-app.post('/advisers', async (req, res) => {
+app.post('/advisers',authenticateToken , async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const stmt = schoolDb.prepare('INSERT INTO advisers(username, password_hash, full_name, assigned_level) VALUES (?, ?, ?, ?)');
     res.send(stmt.run(req.body.username, hashedPassword, req.body.full_name, req.body.assigned_level));
@@ -47,3 +47,20 @@ app.post('/login', async (req, res) => {
 app.listen(3000, () => {
     console.log("The server is running at port 3000");
 })
+
+
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    if(!token) {
+        return res.status(401).send("rejected");
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.adviser = decoded;
+        next();
+    } catch (error) {
+        return res.status(401).send("Invalid or expired token");
+    }
+}
