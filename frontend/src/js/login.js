@@ -16,6 +16,7 @@ form.addEventListener("submit", (e) => {
     .then(data => {
         loading.style.display = "none";
         localStorage.setItem("token", data.token);
+        localStorage.setItem( "grade_level", data.grade_level);
         window.location.href = "./src/pages/dashboard.html";
     })
     .catch(error => {

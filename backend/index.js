@@ -35,13 +35,32 @@ app.post('/login', async (req, res) => {
                 process.env.JWT_SECRET,
                 {expiresIn: '1d'}
             )
-            res.json({message: "LOGIN SUCCESSFUL", token});
+            res.json({message: "LOGIN SUCCESSFUL", token, grade_level: adviser.assigned_level});
         } else {
             res.status(401).send("Incorrect password");
         }
     } else {
         res.status(401).send("No account found");
     }
+})
+
+app.patch('/students/:id', authenticateToken, (req, res) => {
+    const action = req.body.action;
+    const adviser = req.adviser.id;
+    if(action === "assign") {
+        const stmt = schoolDb.prepare('UPDATE students SET adviser_id = ? WHERE id = ?');
+        res.send(stmt.run(adviser, req.params.id));
+    } else if(action === "remove") {
+        const stmt = schoolDb.prepare('UPDATE students SET adviser_id = NULL WHERE id = ?');
+        res.send(stmt.run(req.params.id));
+    }
+})
+
+app.get('/students/assigned', authenticateToken, (req, res) => {
+    const adviser = req.adviser.id;
+    const stmt = schoolDb.prepare(`SELECT * FROM students WHERE adviser_id = ?`);
+    const students = stmt.all(adviser);
+    res.json(students);
 })
 
 app.listen(3000, () => {
