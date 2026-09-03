@@ -16,7 +16,8 @@
     </div>
     <div class="profile">
       <img src="../img/vecteezy_profile-default-icon-design-template_50018408.jpg" alt="Adviser profile">
-      <div><strong>Bernard Capalad</strong><small>Adviser · Grade 10</small></div>
+      <div><strong><span id="teacherName"></span></strong><small>Adviser · Grade <span class="gradeNumber"></span></small></div>
+      <button class="logout btn"><img id="logout-logo" src="../icons/logout-logo.svg" alt="logout"></button>
     </div>
   </div>
 </header>
@@ -24,7 +25,7 @@
 <main class="wrapper">
   <div class="toolbar">
     <label class="search">⌕ <input id="search" type="search" placeholder="Search students..."></label>
-    <div><b>Grade<span id="gradeNumber"></span></b> <span id="count">0 of 40 students</span></div>
+    <div><b>Grade <span class="gradeNumber"></span></b> <span id="count"></span> students</div>
   </div>
 
   <div class="dashboard">

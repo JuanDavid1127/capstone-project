@@ -3,12 +3,27 @@ const jwt = require('jsonwebtoken');
 const schoolDb = require('./database');
 const express = require('express');
 const bcrypt = require('bcrypt');
+const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const app = express();
+const loginLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    message: "Too many login attempts, please try again later."
+})
 app.use(express.json());
 app.use(cors());
 
 app.post( '/students', (req, res) => {
+    const validGrades = ["G7", "G8", "G9", "G10", "G11", "G12"]
+    if(
+        !req.body.name || 
+        !/^\d{12}$/.test(req.body.lrn) || 
+        (req.body.gender !== "male" && req.body.gender !== "female") || 
+        !validGrades.includes(req.body.grade_level)
+    ) {
+        return res.status(400).send("Invalid Input");
+    }
     const stmt = schoolDb.prepare('INSERT INTO students(name, lrn, gender, grade_level) VALUES (?, ?, ?, ?)');
     res.send(stmt.run(req.body.name, req.body.lrn, req.body.gender, req.body.grade_level));
 })
@@ -25,17 +40,17 @@ app.post('/advisers', authenticateToken, async (req, res) => {
     res.send(stmt.run(req.body.username, hashedPassword, req.body.full_name, req.body.assigned_level));
 })
 
-app.post('/login', async (req, res) => {
+app.post('/login', loginLimiter, async (req, res) => {
     const adviser = schoolDb.prepare('SELECT * FROM advisers WHERE username = ?').get(req.body.username);
     if(adviser != undefined) {
         const comparedPassword = await bcrypt.compare(req.body.password, adviser.password_hash);
         if(comparedPassword) {
             const token = jwt.sign(
-                {id: adviser.id, grade_level: adviser.assigned_level},
+                {id: adviser.id, grade_level: adviser.assigned_level, full_name: adviser.full_name},
                 process.env.JWT_SECRET,
                 {expiresIn: '1d'}
             )
-            res.json({message: "LOGIN SUCCESSFUL", token, grade_level: adviser.assigned_level});
+            res.json({message: "LOGIN SUCCESSFUL", token, grade_level: adviser.assigned_level, full_name: adviser.full_name});
         } else {
             res.status(401).send("Incorrect password");
         }
@@ -48,8 +63,13 @@ app.patch('/students/:id', authenticateToken, (req, res) => {
     const action = req.body.action;
     const adviser = req.adviser.id;
     if(action === "assign") {
-        const stmt = schoolDb.prepare('UPDATE students SET adviser_id = ? WHERE id = ?');
-        res.send(stmt.run(adviser, req.params.id));
+        const stmt = schoolDb.prepare('UPDATE students SET adviser_id = ? WHERE id = ? AND adviser_id IS NULL');
+        const result = stmt.run(adviser, req.params.id);
+        if(result.changes === 0) {
+            return res.status(409).send("This student was already assigned by another adviser");
+        } else {
+            res.send(result);
+        }
     } else if(action === "remove") {
         const stmt = schoolDb.prepare('UPDATE students SET adviser_id = NULL WHERE id = ?');
         res.send(stmt.run(req.params.id));

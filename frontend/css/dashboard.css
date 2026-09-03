@@ -66,6 +66,19 @@ header {
     object-fit: cover;
 }
 
+/* logout  */ 
+
+.logout {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+#logout-logo {
+    width: 40px;
+    height: 40px;
+}
+
 
 
 /* Toolbar */

@@ -1,8 +1,18 @@
 const token = localStorage.getItem("token");
 const gradeLevel = localStorage.getItem("grade_level");
+const fullName = localStorage.getItem("full_name");
 const available = document.querySelector("#available");
 const assigned = document.querySelector("#assigned");
-const gradeNumber = document.querySelector("#gradeNumber");
+const gradeNumber = document.querySelectorAll(".gradeNumber");
+const teacherName = document.querySelector("#teacherName");
+const countId = document.querySelector("#count");
+const logoutBtn = document.querySelector(".logout");
+
+teacherName.textContent = fullName;
+gradeNumber.forEach(text => {
+    text.textContent = gradeLevel.split("").slice(1).join("");
+})
+
 checkAuth(token);
 loadStudents(token);
 loadAssignedStudents(token);
@@ -11,6 +21,11 @@ window.addEventListener("pageshow", (event) => {
         if(event.persisted) {
             checkAuth(token);
     }
+})
+
+logoutBtn.addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "../../index.html";
 })
 
 available.addEventListener("click", (event) => {
@@ -59,7 +74,6 @@ function checkAuth(token) {
 
 function loadStudents(token) {
     available.innerHTML = "";
-    console.log(gradeLevel)
     fetch(`http://localhost:3000/students?grade_level=${gradeLevel}`, {
         headers: {
             "Authorization" : `Bearer ${token}`
@@ -81,6 +95,7 @@ function loadStudents(token) {
 }
 
 function loadAssignedStudents(token) {
+    let counter = 0;
     assigned.innerHTML = "";
     fetch("http://localhost:3000/students/assigned?", {
         headers: {
@@ -98,10 +113,9 @@ function loadAssignedStudents(token) {
                         </tr>
                         `
             assigned.innerHTML += row;
+            counter++;
         })
+        countId.textContent = counter;
     })
 }
 
-function getGradeLevel(token) {
-    
-}
