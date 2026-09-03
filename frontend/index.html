@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +11,7 @@
     <main class="page">
         <form class="form-card">
 
-            <!-- School Header -->
+            <!School Header>
             <header class="school-header">
                 <div class="school-logo">
                     <img src="school-logo.png" alt="School Logo">
@@ -24,7 +23,7 @@
                 </div>
             </header>
 
-            <!-- School Information -->
+            <!School Information>
             <div class="top-info">
                 <div class="school-year">
                     <div class="field small-field">
@@ -39,23 +38,31 @@
                 </div>
 
                 <div class="check-box">
-                    <p>Check only the appropriate box.</p>
+                    <p>Check only the appropriate answer.</p>
 
-                    <div class="check-row">
+                    <div class="check-row"> 
                         <span>1. With LRN?</span>
-                        <label><input type="checkbox" name="withLrnYes"> Yes</label>
-                        <label><input type="checkbox" name="withLrnNo"> No</label>
+                        <label>
+                            <input type="radio" name="withLrn" value="yes"> Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="withLrn" value="no"> No
+                        </label>
                     </div>
 
                     <div class="check-row">
                         <span>2. Returnee (Balik-Aral)</span>
-                        <label><input type="checkbox" name="returneeYes"> Yes</label>
-                        <label><input type="checkbox" name="returneeNo"> No</label>
+                        <label>
+                            <input type="radio" name="returnee" value="yes"> Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="returnee" value="no"> No
+                        </label>
                     </div>
                 </div>
             </div>
 
-            <!-- Learner's Information -->
+            <!Learner's Information>
             <h2>Learner's Information</h2>
 
             <section class="section learner-grid">
@@ -92,8 +99,12 @@
                 <div class="field">
                     <label>Sex:</label>
                     <div class="inline-options">
-                        <label><input type="checkbox" name="male"> Male</label>
-                        <label><input type="checkbox" name="female"> Female</label>
+                        <label>
+                            <input type="radio" name="sex" value="male"> Male
+                        </label>
+                        <label>
+                            <input type="radio" name="sex" value="female"> Female
+                        </label>
                     </div>
                 </div>
 
@@ -105,8 +116,12 @@
                 <div class="field span-2">
                     <label>Belong to any Indigenous People (IP) Community:</label>
                     <div class="inline-options">
-                        <label><input type="checkbox" name="ipYes"> Yes</label>
-                        <label><input type="checkbox" name="ipNo"> No</label>
+                        <label>
+                            <input type="radio" name="ipCommunity" value="yes"> Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="ipCommunity" value="no"> No
+                        </label>
                     </div>
                 </div>
 
@@ -118,8 +133,12 @@
                 <div class="field span-2">
                     <label>Is your Family a beneficiary of 4Ps?</label>
                     <div class="inline-options">
-                        <label><input type="checkbox" name="fourPsYes"> Yes</label>
-                        <label><input type="checkbox" name="fourPsNo"> No</label>
+                        <label>
+                            <input type="radio" name="fourPs" value="yes"> Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="fourPs" value="no"> No
+                        </label>
                     </div>
                 </div>
 
@@ -129,13 +148,17 @@
                 </div>
             </section>
 
-            <!-- Disability -->
+            <!Disability>
             <section class="section">
                 <h3>Is the Child with a Learner's Disability?</h3>
 
                 <div class="inline-options">
-                    <label><input type="checkbox" name="disabilityYes"> Yes</label>
-                    <label><input type="checkbox" name="disabilityNo"> No</label>
+                    <label>
+                        <input type="radio" name="learnerDisability" value="yes"> Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="learnerDisability" value="no"> No
+                    </label>
                 </div>
 
                 <p class="sub-label">If Yes, specify the type of disability:</p>
@@ -158,7 +181,7 @@
                 </div>
             </section>
 
-            <!-- Current Address -->
+            <!Current Address>
             <section class="section">
                 <h3>Current Address</h3>
 
@@ -173,15 +196,21 @@
                 </div>
             </section>
 
-            <!-- Permanent Address -->
+            <!Permanent Address>
             <section class="section">
                 <div class="address-title">
                     <h3>Permanent Address</h3>
 
                     <div class="same-address">
                         <span>Same with your Current Address?</span>
-                        <label><input type="checkbox" name="sameYes"> Yes</label>
-                        <label><input type="checkbox" name="sameNo"> No</label>
+
+                        <label>
+                            <input type="radio" name="sameAddress" value="yes"> Yes
+                        </label>
+
+                        <label>
+                            <input type="radio" name="sameAddress" value="no"> No
+                        </label>
                     </div>
                 </div>
 
@@ -196,7 +225,7 @@
                 </div>
             </section>
 
-            <!-- Parents / Guardian -->
+            <!Parents / Guardian>
             <section class="section parents-section">
                 <h2>Parents / Guardian's Information</h2>
 
@@ -225,11 +254,10 @@
                 </div>
             </section>
 
-            <!-- Submit -->
+            <!Submit>
             <button class="submit-btn" type="submit">Submit</button>
 
         </form>
     </main>
 </body>
 </html>
-```
