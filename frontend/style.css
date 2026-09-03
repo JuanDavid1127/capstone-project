@@ -1,0 +1,354 @@
+* {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #eeeeee;
+            color: #333;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+        }
+
+        .page {
+            width: 100%;
+            padding: 28px 20px 45px;
+        }
+
+        .form-card {
+            width: min(100%, 1000px);
+            margin: 0 auto;
+            padding: 25px 38px 32px;
+            background: #f7f7f7;
+            border: 1px solid #e2e2e2;
+        }
+
+        /* School Header */
+        .school-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        /* Blank space for your image */
+        .school-logo {
+            width: 48px;
+            height: 48px;
+        }
+
+        .school-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .school-header h1 {
+            margin: 0;
+            font-size: 15px;
+            font-family: "Old English Text MT", "UnifrakturMaguntia", serif;
+        }
+
+        .school-header p {
+            margin: 2px 0 0;
+            font-size: 9px;
+            font-family: "Old English Text MT", "UnifrakturMaguntia", serif;
+        }
+
+        /* Top Information */
+        .top-info {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr;
+            gap: 22px;
+            margin-bottom: 22px;
+        }
+
+        .school-year {
+            display: flex;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .small-field {
+            width: 130px;
+        }
+
+        .grade-field {
+            width: 90px;
+        }
+
+        .check-box {
+            border: 1px solid #999;
+            border-radius: 9px;
+            padding: 10px 14px;
+            background: #fafafa;
+        }
+
+        .check-box p {
+            margin: 0 0 7px;
+            text-align: center;
+            font-size: 9px;
+        }
+
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0;
+            flex-wrap: wrap;
+        }
+
+        .check-row span {
+            min-width: 165px;
+        }
+
+        /* General */
+        h2 {
+            margin: 5px 0 13px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        h3 {
+            margin: 0 0 9px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .section {
+            border-bottom: 1px solid #888;
+            padding-bottom: 14px;
+            margin-bottom: 13px;
+        }
+
+        /* Learner Information */
+        .learner-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px 18px;
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 9px;
+        }
+
+        .span-2 {
+            grid-column: span 2;
+        }
+
+        /* Inputs */
+        input[type="text"],
+        input[type="tel"] {
+            width: 100%;
+            height: 29px;
+            padding: 6px 9px;
+            border: 1px solid #999;
+            border-radius: 6px;
+            background: rgb(254, 254, 254);
+            outline: none;
+            font-size: 10px;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus {
+            border-color: #555;
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        input[type="checkbox"] {
+            width: 13px;
+            height: 13px;
+            margin: 0;
+            accent-color: #162c78;
+        }
+
+        .inline-options {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            min-height: 29px;
+        }
+
+        .inline-options label,
+        .check-row label,
+        .same-address label,
+        .disability-grid label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin: 0;
+            font-size: 9px;
+        }
+
+        /* Disability */
+        .sub-label {
+            margin: 8px 0;
+            font-size: 9px;
+        }
+
+        .disability-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px 18px;
+        }
+
+        .disability-grid .nested {
+            padding-left: 18px;
+        }
+
+        /* Address */
+        .address-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr 1.2fr;
+            gap: 11px 16px;
+        }
+
+        .address-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .same-address {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 9px;
+        }
+
+        /* Parents */
+        .parents-section {
+            border-bottom: 0;
+            margin-bottom: 7px;
+        }
+
+        .parents-section h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .parent-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 13px;
+        }
+
+        .parent-row h3 {
+            grid-column: 1 / -1;
+            margin-bottom: -3px;
+        }
+
+        /* Button */
+        .submit-btn {
+            display: block;
+            margin: 8px auto 0;
+            min-width: 105px;
+            padding: 8px 24px;
+            border: 0;
+            border-radius: 6px;
+            background: #142b78;
+            color: white;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #0d205e;
+        }
+
+        /* Tablet */
+        @media (max-width: 800px) {
+            .form-card {
+                padding: 22px 24px 28px;
+            }
+
+            .top-info {
+                grid-template-columns: 1fr;
+            }
+
+            .learner-grid,
+            .disability-grid,
+            .address-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .parent-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 520px) {
+            body {
+                font-size: 10px;
+            }
+
+            .page {
+                padding: 10px 7px 25px;
+            }
+
+            .form-card {
+                padding: 18px 15px 25px;
+            }
+
+            .school-logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .school-header h1 {
+                font-size: 12px;
+            }
+
+            .school-header p {
+                font-size: 8px;
+            }
+
+            .school-year {
+                align-items: stretch;
+            }
+
+            .small-field,
+            .grade-field {
+                width: auto;
+                flex: 1;
+            }
+
+            .learner-grid,
+            .disability-grid,
+            .address-grid,
+            .parent-row {
+                grid-template-columns: 1fr;
+            }
+
+            .span-2 {
+                grid-column: auto;
+            }
+
+            .address-title {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .check-row span {
+                min-width: 100%;
+            }
+
+            .disability-grid .nested {
+                padding-left: 0;
+            }
+        }

@@ -1,52 +1,235 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/cssReset.css">
-    <link rel="stylesheet" href="./css/login.css">
-    <script src="./src/js/login.js" defer></script>
-    <title>Login Page</title>
+    <link rel="stylesheet" href="style.css">
+    <title>Learner's Information Form</title>
 </head>
+
 <body>
-    <div id="loading">
-        <p>Loading...</p>
-    </div>
-    <div class="wrapper">
-        <div class="left-container">
-            <div class="title-container">
-                <div class="logo"><img src="./src/img/Group 2.png" alt=""></div>
-                <div class="title-text">
-                    <img class="main-text" src="./src/img/Colegio de San Pascual Baylon.png" alt="">
-                    <img class="sub-text" src="./src/img/Pag-asa, Obando, Bulacan.png" alt="">
+    <main class="page">
+        <form class="form-card">
+
+            <!-- School Header -->
+            <header class="school-header">
+                <div class="school-logo">
+                    <img src="school-logo.png" alt="School Logo">
+                </div>
+
+                <div>
+                    <h1>Colegio de San Pascual Baylon</h1>
+                    <p>Pag-asa, Obando, Bulacan</p>
+                </div>
+            </header>
+
+            <!-- School Information -->
+            <div class="top-info">
+                <div class="school-year">
+                    <div class="field small-field">
+                        <label for="schoolYear">School Year:</label>
+                        <input id="schoolYear" name="schoolYear" type="text" placeholder="yyyy-yyyy">
+                    </div>
+
+                    <div class="field grade-field">
+                        <label for="gradeLevel">Grade Level to Enroll:</label>
+                        <input id="gradeLevel" name="gradeLevel" type="text" placeholder="00">
+                    </div>
+                </div>
+
+                <div class="check-box">
+                    <p>Check only the appropriate box.</p>
+
+                    <div class="check-row">
+                        <span>1. With LRN?</span>
+                        <label><input type="checkbox" name="withLrnYes"> Yes</label>
+                        <label><input type="checkbox" name="withLrnNo"> No</label>
+                    </div>
+
+                    <div class="check-row">
+                        <span>2. Returnee (Balik-Aral)</span>
+                        <label><input type="checkbox" name="returneeYes"> Yes</label>
+                        <label><input type="checkbox" name="returneeNo"> No</label>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="right-container">
-            <div class="mobile-logo">
-                <div class="title-text">
-                    <img class="main-text" src="./src/img/Colegio de San Pascual Baylon.png" alt="">
-                    <img class="sub-text" src="./src/img/Pag-asa, Obando, Bulacan.png" alt="">
+
+            <!-- Learner's Information -->
+            <h2>Learner's Information</h2>
+
+            <section class="section learner-grid">
+                <div class="field span-2">
+                    <label for="lrn">Learner's Reference Number (LRN):</label>
+                    <input id="lrn" name="lrn" type="text" placeholder="000000000000">
                 </div>
-            </div>
-            <form action="" class="form" id="loginForm">
-                <h2 class="welcome">Welcome</h2>
-                <div class="input-card">
-                        <div class="input-container">
-                        <label for="username">Username:</label>
-                        <input type="text" name="username" id="username" required placeholder="username">
-                    </div>
-                    <div class="input-container">
-                        <label for="password">password:</label>
-                        <input type="password" id="password" name="password" placeholder="password">
-                    </div>
-                    <div class="password-container">
-                        <a href="#">forgot password?</a>
-                    </div>
-                    <button class="submitBtn" type="submit">Log in</button>
+
+                <div class="field">
+                    <label for="birthPlace">Place of Birth:</label>
+                    <input id="birthPlace" name="birthPlace" type="text" placeholder="Municipality/City">
                 </div>
-            </form>
-        </div>
-    </div>
+
+                <div class="field">
+                    <label for="lastName">Last Name:</label>
+                    <input id="lastName" name="lastName" type="text" placeholder="Last Name">
+                </div>
+
+                <div class="field">
+                    <label for="firstName">First Name:</label>
+                    <input id="firstName" name="firstName" type="text" placeholder="First Name">
+                </div>
+
+                <div class="field">
+                    <label for="middleName">Middle Name:</label>
+                    <input id="middleName" name="middleName" type="text" placeholder="Middle Name">
+                </div>
+
+                <div class="field">
+                    <label for="motherTongue">Mother Tongue:</label>
+                    <input id="motherTongue" name="motherTongue" type="text" placeholder="Mother Tongue">
+                </div>
+
+                <div class="field">
+                    <label>Sex:</label>
+                    <div class="inline-options">
+                        <label><input type="checkbox" name="male"> Male</label>
+                        <label><input type="checkbox" name="female"> Female</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="extension">Extension Name:</label>
+                    <input id="extension" name="extension" type="text" placeholder="Jr., III">
+                </div>
+
+                <div class="field span-2">
+                    <label>Belong to any Indigenous People (IP) Community:</label>
+                    <div class="inline-options">
+                        <label><input type="checkbox" name="ipYes"> Yes</label>
+                        <label><input type="checkbox" name="ipNo"> No</label>
+                    </div>
+                </div>
+
+                <div class="field span-2">
+                    <label for="ipSpecify">If Yes, please specify:</label>
+                    <input id="ipSpecify" name="ipSpecify" type="text">
+                </div>
+
+                <div class="field span-2">
+                    <label>Is your Family a beneficiary of 4Ps?</label>
+                    <div class="inline-options">
+                        <label><input type="checkbox" name="fourPsYes"> Yes</label>
+                        <label><input type="checkbox" name="fourPsNo"> No</label>
+                    </div>
+                </div>
+
+                <div class="field span-2">
+                    <label for="householdId">If Yes, write the 4Ps Household ID Number:</label>
+                    <input id="householdId" name="householdId" type="text">
+                </div>
+            </section>
+
+            <!-- Disability -->
+            <section class="section">
+                <h3>Is the Child with a Learner's Disability?</h3>
+
+                <div class="inline-options">
+                    <label><input type="checkbox" name="disabilityYes"> Yes</label>
+                    <label><input type="checkbox" name="disabilityNo"> No</label>
+                </div>
+
+                <p class="sub-label">If Yes, specify the type of disability:</p>
+
+                <div class="disability-grid">
+                    <label><input type="checkbox"> Visual Impairment</label>
+                    <label><input type="checkbox"> Hearing Impairment</label>
+                    <label><input type="checkbox"> Learning Disability</label>
+                    <label><input type="checkbox"> Intellectual Disability</label>
+                    <label><input type="checkbox"> Blind</label>
+                    <label><input type="checkbox"> Autism Spectrum Disorder</label>
+                    <label><input type="checkbox"> Emotional/Behavioral Disorder</label>
+                    <label><input type="checkbox"> Orthopedic/Physical Handicap</label>
+                    <label><input type="checkbox"> Low Vision</label>
+                    <label><input type="checkbox"> Speech/Language Disorder</label>
+                    <label><input type="checkbox"> Cerebral Palsy</label>
+                    <label><input type="checkbox"> Special Health Problem</label>
+                    <label><input type="checkbox"> Multiple Disorder</label>
+                    <label><input type="checkbox"> Cancer</label>
+                </div>
+            </section>
+
+            <!-- Current Address -->
+            <section class="section">
+                <h3>Current Address</h3>
+
+                <div class="address-grid">
+                    <input type="text" placeholder="House No.">
+                    <input type="text" placeholder="Street Name">
+                    <input type="text" placeholder="Barangay">
+                    <input type="text" placeholder="Municipality / City">
+                    <input type="text" placeholder="Province">
+                    <input type="text" placeholder="Country">
+                    <input type="text" placeholder="Zip Code">
+                </div>
+            </section>
+
+            <!-- Permanent Address -->
+            <section class="section">
+                <div class="address-title">
+                    <h3>Permanent Address</h3>
+
+                    <div class="same-address">
+                        <span>Same with your Current Address?</span>
+                        <label><input type="checkbox" name="sameYes"> Yes</label>
+                        <label><input type="checkbox" name="sameNo"> No</label>
+                    </div>
+                </div>
+
+                <div class="address-grid">
+                    <input type="text" placeholder="House No.">
+                    <input type="text" placeholder="Street Name">
+                    <input type="text" placeholder="Barangay">
+                    <input type="text" placeholder="Municipality / City">
+                    <input type="text" placeholder="Province">
+                    <input type="text" placeholder="Country">
+                    <input type="text" placeholder="Zip Code">
+                </div>
+            </section>
+
+            <!-- Parents / Guardian -->
+            <section class="section parents-section">
+                <h2>Parents / Guardian's Information</h2>
+
+                <div class="parent-row">
+                    <h3>Father's Name</h3>
+                    <input type="text" placeholder="Last Name">
+                    <input type="text" placeholder="First Name">
+                    <input type="text" placeholder="Middle Name">
+                    <input type="tel" placeholder="Contact Number">
+                </div>
+
+                <div class="parent-row">
+                    <h3>Mother's Maiden Name</h3>
+                    <input type="text" placeholder="Last Name">
+                    <input type="text" placeholder="First Name">
+                    <input type="text" placeholder="Middle Name">
+                    <input type="tel" placeholder="Contact Number">
+                </div>
+
+                <div class="parent-row">
+                    <h3>Legal Guardian's Name</h3>
+                    <input type="text" placeholder="Last Name">
+                    <input type="text" placeholder="First Name">
+                    <input type="text" placeholder="Middle Name">
+                    <input type="tel" placeholder="Contact Number">
+                </div>
+            </section>
+
+            <!-- Submit -->
+            <button class="submit-btn" type="submit">Submit</button>
+
+        </form>
+    </main>
 </body>
 </html>
+```
