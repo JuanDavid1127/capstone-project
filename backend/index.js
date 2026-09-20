@@ -16,16 +16,27 @@ app.use(cors());
 
 app.post( '/students', (req, res) => {
     const validGrades = ["G7", "G8", "G9", "G10", "G11", "G12"]
+    const boolean = ["yes", "no"]
+    const returnee = req.body.returnee === "yes" ? 1 : 0;
+    const hasDisability = req.body.learnerDisability === "yes" ? 1 : 0;
+    const isFourPs = req.body.fourPs === "yes" ? 1 : 0;
+    const isIpCommunity = req.body.ipCommunity === "yes" ? 1 : 0;
     if(
-        !req.body.name || 
+        !(req.body.last_name && req.body.first_name) ||
         !/^\d{12}$/.test(req.body.lrn) || 
-        (req.body.gender !== "male" && req.body.gender !== "female") || 
-        !validGrades.includes(req.body.grade_level)
+        (req.body.sex !== "male" && req.body.sex !== "female") || 
+        !validGrades.includes(req.body.grade_level) ||
+        !boolean.includes(req.body.returnee) ||
+        !boolean.includes(req.body.ipCommunity) ||
+        !boolean.includes(req.body.fourPs) ||
+        !boolean.includes(req.body.learnerDisability)
     ) {
         return res.status(400).send("Invalid Input");
     }
-    const stmt = schoolDb.prepare('INSERT INTO students(name, lrn, gender, grade_level) VALUES (?, ?, ?, ?)');
-    res.send(stmt.run(req.body.name, req.body.lrn, req.body.gender, req.body.grade_level));
+    const stmt = schoolDb.prepare('INSERT INTO students(lrn, last_name, first_name, middle_name, extension_name, gender, grade_level, school_year, returnee, birth_place, mother_tongue, ip_community, four_ps, four_ps_household_id, has_disability, disability_others) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    res.send(stmt.run(
+        req.body.lrn, req.body.last_name, req.body.first_name, req.body.middle_name, req.body.extension_name, req.body.sex, req.body.grade_level, req.body.school_year, returnee, req.body.birth_place, req.body.mother_tongue, isIpCommunity, isFourPs, req.body.householdId, hasDisability, req.body.others 
+    ));
 })
 
 app.get('/students', authenticateToken, (req, res) => {

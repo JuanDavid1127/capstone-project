@@ -40,16 +40,6 @@
                 <div class="check-box">
                     <p>Check only the appropriate answer.</p>
 
-                    <div class="check-row"> 
-                        <span>1. With LRN?</span>
-                        <label>
-                            <input type="radio" name="withLrn" value="yes"> Yes
-                        </label>
-                        <label>
-                            <input type="radio" name="withLrn" value="no"> No
-                        </label>
-                    </div>
-
                     <div class="check-row">
                         <span>2. Returnee (Balik-Aral)</span>
                         <label>
@@ -64,6 +54,7 @@
 
             <!Learner's Information>
             <h2>Learner's Information</h2>
+            
 
             <section class="section learner-grid">
                 <div class="field span-2">
@@ -77,10 +68,15 @@
                 </div>
 
                 <div class="field">
+                    <label for="motherTongue">Mother Tongue:</label>
+                    <input id="motherTongue" name="motherTongue" type="text" placeholder="Mother Tongue">
+                </div>
+
+                <div class="field">
                     <label for="lastName">Last Name:</label>
                     <input id="lastName" name="lastName" type="text" placeholder="Last Name">
                 </div>
-
+                 
                 <div class="field">
                     <label for="firstName">First Name:</label>
                     <input id="firstName" name="firstName" type="text" placeholder="First Name">
@@ -92,11 +88,11 @@
                 </div>
 
                 <div class="field">
-                    <label for="motherTongue">Mother Tongue:</label>
-                    <input id="motherTongue" name="motherTongue" type="text" placeholder="Mother Tongue">
+                    <label for="extension">Extension Name:</label>
+                    <input id="extension" name="extension" type="text" placeholder="Jr., III">
                 </div>
 
-                <div class="field">
+                <div class="field span-3">
                     <label>Sex:</label>
                     <div class="inline-options">
                         <label>
@@ -108,12 +104,7 @@
                     </div>
                 </div>
 
-                <div class="field">
-                    <label for="extension">Extension Name:</label>
-                    <input id="extension" name="extension" type="text" placeholder="Jr., III">
-                </div>
-
-                <div class="field span-2">
+                <div class="field span-4">
                     <label>Belong to any Indigenous People (IP) Community:</label>
                     <div class="inline-options">
                         <label>
@@ -174,6 +165,12 @@
                     <label><input type="checkbox"> Special Health Problem</label>
                     <label><input type="checkbox"> Multiple Disorder</label>
                     <label><input type="checkbox"> Cancer</label>
+                    <label><input type="checkbox"> Others</label>
+                    
+                    <div class="field span-4">
+                        <label for="others">if Others, please specify:</label>
+                        <input id="others" name="others" type="text" placeholder="">
+                    </div>
                 </div>
             </section>
 
