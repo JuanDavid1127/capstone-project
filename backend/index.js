@@ -15,12 +15,37 @@ app.use(express.json());
 app.use(cors());
 
 app.post( '/students', (req, res) => {
+
     const validGrades = ["G7", "G8", "G9", "G10", "G11", "G12"]
     const boolean = ["yes", "no"]
     const returnee = req.body.returnee === "yes" ? 1 : 0;
     const hasDisability = req.body.learnerDisability === "yes" ? 1 : 0;
     const isFourPs = req.body.fourPs === "yes" ? 1 : 0;
     const isIpCommunity = req.body.ipCommunity === "yes" ? 1 : 0;
+    const guardians = [
+        { 
+            relationship: "father", 
+            last_name: req.body.fatherLastName, 
+            first_name: req.body.fatherFirstName,
+            middle_name: req.body.fatherMiddleName,
+            contact_no: req.body.fatherContactNo   
+        },
+        {
+            relationship: "mother",
+            last_name: req.body.motherLastName, 
+            first_name: req.body.motherFirstName,
+            middle_name: req.body.motherMiddleName,
+            contact_no: req.body.motherContactNo  
+        },
+        {
+            relationship: "guardian",
+            last_name: req.body.guardianLastName, 
+            first_name: req.body.guardianFirstName,
+            middle_name: req.body.guardianMiddleName,
+            contact_no: req.body.guardianContactNo  
+        }
+    ]
+    console.log(req.body)
     if(
         !(req.body.last_name && req.body.first_name) ||
         !/^\d{12}$/.test(req.body.lrn) || 
@@ -29,15 +54,72 @@ app.post( '/students', (req, res) => {
         !boolean.includes(req.body.returnee) ||
         !boolean.includes(req.body.ipCommunity) ||
         !boolean.includes(req.body.fourPs) ||
-        !boolean.includes(req.body.learnerDisability)
+        !boolean.includes(req.body.learnerDisability) ||
+        req.body.currBarangay === "" ||
+        req.body.currProvince === "" ||
+        req.body.currCountry === "" ||
+        (req.body.sameAddress === "no" && (
+            req.body.permBarangay === "" ||
+            req.body.permProvince === "" ||
+            req.body.permCountry === ""
+        )) 
     ) {
         return res.status(400).send("Invalid Input");
     }
-    const stmt = schoolDb.prepare('INSERT INTO students(lrn, last_name, first_name, middle_name, extension_name, gender, grade_level, school_year, returnee, birth_place, mother_tongue, ip_community, four_ps, four_ps_household_id, has_disability, disability_others) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    res.send(stmt.run(
-        req.body.lrn, req.body.last_name, req.body.first_name, req.body.middle_name, req.body.extension_name, req.body.sex, req.body.grade_level, req.body.school_year, returnee, req.body.birth_place, req.body.mother_tongue, isIpCommunity, isFourPs, req.body.householdId, hasDisability, req.body.others 
-    ));
+    try {
+        const stmt = schoolDb.prepare('INSERT INTO students(lrn, last_name, first_name, middle_name, extension_name, gender, grade_level, school_year, returnee, birth_place, mother_tongue, ip_community, four_ps, four_ps_household_id, has_disability, disability_others) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+
+        const learnersInformation = stmt.run(
+            req.body.lrn, req.body.last_name, req.body.first_name, req.body.middle_name, req.body.extension_name, req.body.sex, req.body.grade_level, req.body.school_year, returnee, req.body.birth_place, req.body.mother_tongue, isIpCommunity, isFourPs, req.body.householdId, hasDisability, req.body.others 
+        );
+
+        const studentId = learnersInformation.lastInsertRowid;
+        
+        const addressStmt = schoolDb.prepare('INSERT INTO addresses(student_id, address_type, house_no, street, barangay, city, province, country, zipcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+
+        addressStmt.run(studentId, "current", req.body.currHouseNo, req.body.currStreet, req.body.currBarangay, req.body.currCity, req.body.currProvince, req.body.currCountry, req.body.currZipcode);
+
+        if(req.body.sameAddress === "yes") {
+            addressStmt.run(studentId, "permanent", req.body.currHouseNo, req.body.currStreet, req.body.currBarangay, req.body.currCity, req.body.currProvince, req.body.currCountry, req.body.currZipcode);
+        } else {
+            addressStmt.run(studentId, "permanent", req.body.permHouseNo, req.body.permStreet, req.body.permBarangay, req.body.permCity, req.body.permProvince, req.body.permCountry, req.body.permZipcode)
+        }
+
+        const guardianStmt = schoolDb.prepare('INSERT INTO guardians(student_id, relationship, last_name, first_name, middle_name, contact_number) VALUES (?, ?, ?, ?, ?, ?)');
+
+        for(const guardian of guardians) {
+            if(guardian.last_name) {
+                guardianStmt.run(
+                    studentId, 
+                    guardian.relationship, 
+                    guardian.last_name, 
+                    guardian.first_name, 
+                    guardian.middle_name, 
+                    guardian.contact_no
+                )
+            }
+        }
+
+        const disabilities = req.body.disabilities || [];
+        
+        const disabilityStmt = schoolDb.prepare(`INSERT INTO student_disabilities(student_id, disability_type) VALUES (?, ?)`);
+
+        for(const disability of disabilities) {
+            disabilityStmt.run(
+                studentId,
+                disability
+            )
+        }
+
+        return res.status(201).json({
+            message: "Student Created Successfully", studentId
+        });
+
+    } catch(error) {
+        return res.status(409).send("cannot be processed, try again")
+    }
 })
+
 
 app.get('/students', authenticateToken, (req, res) => {
     const stmt = schoolDb.prepare(`SELECT * FROM students WHERE grade_level = ? AND adviser_id IS NULL`);

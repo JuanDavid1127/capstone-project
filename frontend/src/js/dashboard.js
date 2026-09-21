@@ -83,7 +83,7 @@ function loadStudents(token) {
     .then(data => {
         data.forEach(student => {
             const row = `<tr>
-                            <td><b>${student.name}</b></td>
+                            <td><b>${student.last_name}, ${student.first_name} ${student.middle_name}</b></td>
                             <td>${student.grade_level}</td>
                             <td>${student.lrn}</td>
                             <td><button class="assign" data-student-id=${student.id}>Assign</button></td>
@@ -106,7 +106,7 @@ function loadAssignedStudents(token) {
     .then(data => {
         data.forEach(student => {
             const row = `<tr>
-                            <td><b>${student.name}</b></td>
+                            <td><b>${student.last_name}, ${student.first_name} ${student.middle_name}</b></td>
                             <td>${student.grade_level}</td>
                             <td>${student.lrn}</td>
                             <td><button class="remove" data-student-id=${student.id}>Remove</button></td>
