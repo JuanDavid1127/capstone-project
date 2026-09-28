@@ -1,6 +1,8 @@
 # capstone-project
 
-pag nakita mo to, ibig sabihin bading ka.
+28/9/2026 - added a downloadable docx feature. advisers can now download their own masterlist,
+index.hmtl renamed into login.html
+added toast notification
 
 configured and can now run on any machine, just create another file called ".env" and copy the .env.example contents
 
