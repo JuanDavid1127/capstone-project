@@ -1,5 +1,5 @@
 #loading {
-    display: none; /* your JS already toggles this */
+    display: none; 
     position: fixed;
     top: 0;
     left: 0;

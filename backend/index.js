@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const app = express();
+const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, Tab } = require('docx');
 const loginLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 10,
@@ -122,15 +123,22 @@ app.post( '/students', (req, res) => {
 
 
 app.get('/students', authenticateToken, (req, res) => {
-    const stmt = schoolDb.prepare(`SELECT * FROM students WHERE grade_level = ? AND adviser_id IS NULL`);
+    const stmt = schoolDb.prepare(`SELECT * FROM students WHERE grade_level = ? AND adviser_id IS NULL ORDER BY last_name ASC`);
     const students = stmt.all(req.query.grade_level);
     res.json(students);
 })
 
-app.post('/advisers', authenticateToken, async (req, res) => {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const stmt = schoolDb.prepare('INSERT INTO advisers(username, password_hash, full_name, assigned_level) VALUES (?, ?, ?, ?)');
-    res.send(stmt.run(req.body.username, hashedPassword, req.body.full_name, req.body.assigned_level));
+app.post('/advisers', (req, res) => {
+    if(req.body.setupKey === process.env.ADMIN_SETUP_KEY) {
+        createAdviser(req, res);
+    } else {
+        authenticateToken(req, res, () => {
+            if(req.adviser.is_admin !== 1) {
+                return res.status(403).send("admin access required")
+            }
+            createAdviser(req, res);
+        })
+    }
 })
 
 app.post('/login', loginLimiter, async (req, res) => {
@@ -171,9 +179,131 @@ app.patch('/students/:id', authenticateToken, (req, res) => {
 
 app.get('/students/assigned', authenticateToken, (req, res) => {
     const adviser = req.adviser.id;
-    const stmt = schoolDb.prepare(`SELECT * FROM students WHERE adviser_id = ?`);
+    const stmt = schoolDb.prepare(`SELECT * FROM students WHERE adviser_id = ? ORDER BY last_name ASC`);
     const students = stmt.all(adviser);
     res.json(students);
+})
+
+app.get('/export/masterlist', authenticateToken, async (req, res) => {
+ try {
+    const adviser = req.adviser.id;
+    const stmt = schoolDb.prepare(`SELECT last_name, first_name, middle_name, extension_name, gender FROM students WHERE adviser_id = ? ORDER BY gender DESC, last_name COLLATE NOCASE ASC, first_name COLLATE NOCASE ASC`);
+    const students = stmt.all(adviser);
+
+    const males = students.filter(student => student.gender === "male");
+    const females = students.filter(student => student.gender === "female");
+    
+    const maleNames = males.map(student => studentName(student));
+    const femaleNames = females.map(student => studentName(student));
+
+    const rows = [];
+
+    rows.push(
+        new TableRow({
+            children: [
+                new TableCell({
+                    children: [
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "MALE",
+                                    bold: true
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableCell({
+                    children: [
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "FEMALE",
+                                    bold: true
+                                })
+                            ]
+                        })
+                    ]
+                })
+            ]
+        })
+    );
+    const rowCount = Math.max( maleNames.length, femaleNames.length);
+    for (let i = 0; i < rowCount; i++) {
+        rows.push(
+            new TableRow({
+                children: [
+                    new TableCell({
+                        children: [
+                            new Paragraph(maleNames[i] || "")
+                        ]
+                    }),
+                    new TableCell({
+                        children: [
+                            new Paragraph(femaleNames[i] || "")
+                        ]
+                    })
+                ]
+            })
+        )
+    }
+    const table = new Table({
+        rows: rows,
+        columnWidths: [4859, 4820],
+        width: {
+            size: 9679 ,
+            type: WidthType.DXA
+        }
+    })
+    const doc = new Document({
+        sections: [
+            {
+                children: [
+                    table
+                ]
+            }
+        ]
+    })
+    const buffer = await Packer.toBuffer(doc);
+    res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+    res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="masterlist.docx"'
+    )
+    res.send(buffer);
+    
+ } catch (error) {
+    console.error(error);
+    res.status(500).json({
+        error: "Failed to generate masterlist"
+    })
+ }
+})
+
+app.get('/students/:id', authenticateToken, (req, res) => {
+    const studentStmt = schoolDb.prepare('SELECT * FROM students WHERE id = ?');
+    const addressStmt = schoolDb.prepare(`SELECT * FROM addresses WHERE student_id = ? AND address_type = 'current'`);
+    const guardianStmt = schoolDb.prepare('SELECT * FROM guardians WHERE student_id = ?');
+    const disabilityStmt = schoolDb.prepare('SELECT * FROM student_disabilities WHERE student_id = ?');
+
+    const student = studentStmt.get(req.params.id);
+    if(student === undefined) {
+        return res.status(404).send("no student found")
+    }
+
+    const address = addressStmt.get(req.params.id);
+    const guardian = guardianStmt.all(req.params.id);
+    const disability = disabilityStmt.all(req.params.id);
+
+    res.json({
+        student,
+        address,
+        guardian,
+        disability
+    })
 })
 
 app.listen(3000, () => {
@@ -195,4 +325,17 @@ function authenticateToken(req, res, next) {
     } catch (error) {
         return res.status(401).send("Invalid or expired token");
     }
+}
+
+function studentName(student) {
+    const extensionName = student.extension_name ? ` ${student.extension_name}` : "";
+    const middleInitial = student.middle_name ? ` ${student.middle_name.charAt(0)}.` : "";
+    const fullName = `${student.last_name}, ${student.first_name}${middleInitial}${extensionName}`;
+    return fullName.toUpperCase();
+}
+
+async function createAdviser(req, res) {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const stmt = schoolDb.prepare('INSERT INTO advisers(username, password_hash, full_name, assigned_level) VALUES (?, ?, ?, ?)');
+    res.send(stmt.run(req.body.username, hashedPassword, req.body.full_name, req.body.assigned_level));
 }

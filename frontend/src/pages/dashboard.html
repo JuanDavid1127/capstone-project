@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Adviser Dashboard</title>
 <link rel="stylesheet" href="../../css/dashboard.css">
+<link rel="stylesheet" href="../../css/toast.css">
 <script src="../js/dashboard.js" defer></script>
+<script src="../js/toast.js" defer></script>
 </head>
 <body>
 <header>
@@ -32,7 +34,9 @@
     <section>
       <div class="heading"><div><h1>Students</h1><p>Unassigned students</p></div><span>UNASSIGNED</span></div>
       <div class="table-box"><table>
-        <thead><tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th></th></tr></thead>
+        <thead>
+          <tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th>View student Information</th><th>Action</th></tr>
+        </thead>
         <tbody id="available"></tbody>
       </table></div>
     </section>
@@ -40,7 +44,9 @@
     <section>
       <div class="heading"><div><h1>Assigned Students</h1><p>Students assigned to your section</p></div><span class="green">SECTION</span></div>
       <div class="table-box"><table>
-        <thead><tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th></th></tr></thead>
+        <thead>
+          <tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th>View student Information</th><th>Action</th></tr>
+        </thead>
         <tbody id="assigned"></tbody>
       </table></div>
     </section>
@@ -48,12 +54,103 @@
 
   <div class="footer">
     <p id="status">Select students to assign them to your section.</p>
-    <button id="save">Accept Assignments</button>
+    <button id="save" type="button">Download Master List</button>
   </div>
 </main>
+<!-- Student Profile Modal -->
 
-<script>
+<div id="studentModal" class="student-modal">
+    <div class="student-modal-content">
+        <div class="modal-header">
+            <div>
+                <h2>Student Profile</h2>
+                <p>Student enrollment information</p>
+            </div>
+            <button id="closeModal" type="button">&times;</button>
+        </div>
+        <div class="profile">
+            <!-- Personal / Learner Information -->
+            <section class="profile-section">
+                <h2>Personal / Learner Information</h2>
+                <div class="profile-info">
+                    <p class="label">LRN</p>
+                    <p class="value" id="lrn"></p>
 
-</script>
+                    <p class="label">Full Name</p>
+                    <p class="value" id="fullName"></p>
+
+                    <p class="label">Gender</p>
+                    <p class="value" id="gender"></p>
+
+                    <p class="label">Grade Level</p>
+                    <p class="value" id="gradeLevel"></p>
+
+                    <p class="label">School Year</p>
+                    <p class="value" id="schoolYear"></p>
+
+                    <p class="label">Returnee</p>
+                    <p class="value" id="returnee"></p>
+
+                    <p class="label">Birth Place</p>
+                    <p class="value" id="birthPlace"></p>
+
+                    <p class="label">Mother Tongue</p>
+                    <p class="value" id="motherTongue"></p>
+
+                    <p class="label">IP Community</p>
+                    <p class="value" id="ipCommunity"></p>
+
+                    <p class="label">4Ps</p>
+                    <p class="value" id="fourPs"></p>
+
+                    <p class="label">4Ps Household ID</p>
+                    <p class="value" id="fourPsHouseholdId"></p>
+
+                    <p class="label">Learner's Disability</p>
+                    <p class="value" id="hasDisability"></p>
+                </div>
+            </section>
+            <!-- Current Address -->
+            <section class="profile-section">
+                <h2>Current Address</h2>
+                <div class="profile-info">
+
+                    <p class="label">House No.</p>
+                    <p class="value" id="currHouseNo"></p>
+
+                    <p class="label">Street</p>
+                    <p class="value" id="currStreet"></p>
+
+                    <p class="label">Barangay</p>
+                    <p class="value" id="currBarangay"></p>
+
+                    <p class="label">City</p>
+                    <p class="value" id="currCity"></p>
+
+                    <p class="label">Province</p>
+                    <p class="value" id="currProvince"></p>
+
+                    <p class="label">Country</p>
+                    <p class="value" id="currCountry"></p>
+
+                    <p class="label">ZIP Code</p>
+                    <p class="value" id="currZipcode"></p>
+
+                </div>
+
+            </section>
+            <!-- Guardians -->
+            <section class="profile-section">
+                <h2>Guardians</h2>
+                <div id="guardians"></div>
+            </section>
+            <!-- Disabilities -->
+            <section class="profile-section">
+                <h2>Disabilities</h2>
+                <div id="disabilities"></div>
+            </section>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -12,16 +12,24 @@ form.addEventListener("submit", (e) => {
         headers: {"Content-Type" : "application/json"},
         body: JSON.stringify({username : username.value, password : password.value})
     })
-    .then(response => response.json())
+    .then(response => {
+        if(!response.ok) {
+            throw new error("Wrong Username or Password");
+        }
+        return response.json();
+    })
     .then(data => {
+        showToast("logged in Successfully", "success");
         loading.style.display = "none";
         localStorage.setItem("token", data.token);
         localStorage.setItem( "grade_level", data.grade_level);
         localStorage.setItem("full_name", data.full_name)
-        window.location.href = "./src/pages/dashboard.html";
+        setTimeout(() => {
+            window.location.href = "../pages/dashboard.html";
+        }, 1200)
     })
     .catch(error => {
+        showToast(error.message, "error");
         loading.style.display = "none";
-        alert(error);
     })
 })

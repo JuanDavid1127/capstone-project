@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../css/registration_form.css">
+    <link rel="stylesheet" href="../../css/toast.css">
     <script src="../js/registration.js" defer></script>
+    <script src="../js/toast.js" defer></script>
     <title>Learner's Information Form</title>
 </head>
 
@@ -29,13 +31,12 @@
                 <div class="school-year">
                     <div class="field small-field">
                         <label for="schoolYear">School Year:</label>
-                        <input id="schoolYear" name="schoolYear" type="text" placeholder="yyyy-yyyy">
+                        <input id="schoolYear" name="schoolYear" type="text" placeholder="yyyy-yyyy" required>
                     </div>
 
                     <div class="field grade-field">
                         <label for="gradeLevel">Grade Level to Enroll:</label>
-
-                        <select id="gradeLevel" name="gradeLevel">
+                        <select id="gradeLevel" name="gradeLevel" required>
                             <option value="" disabled selected>Select Grade Level</option>
                             <option value="G7">G7</option>
                             <option value="G8">G8</option>
@@ -65,11 +66,10 @@
             <!Learner's Information>
             <h2>Learner's Information</h2>
             
-
             <section class="section learner-grid">
                 <div class="field span-2">
                     <label for="lrn">Learner's Reference Number (LRN):</label>
-                    <input id="lrn" name="lrn" type="text" placeholder="000000000000">
+                    <input id="lrn" name="lrn" type="tel" placeholder="000000000000" maxlength="12" required>
                 </div>
 
                 <div class="field">
@@ -217,7 +217,7 @@
                     </div>
                 </div>
 
-                <div class="address-grid">
+                <div class="perm-address-grid">
                     <input type="text" name="permHouseNo" placeholder="House No.">
                     <input type="text" name="permStreet" placeholder="Street Name">
                     <input type="text" name="permBarangay" placeholder="Barangay">
@@ -237,7 +237,7 @@
                     <input type="text" name="fatherLastName" placeholder="Last Name">
                     <input type="text" name="fatherFirstName" placeholder="First Name">
                     <input type="text" name="fatherMiddleName" placeholder="Middle Name">
-                    <input type="tel" name="fatherContactNo" placeholder="Contact Number">
+                    <input type="tel" name="fatherContactNo" placeholder="Contact Number" maxlength="11">
                 </div>
 
                 <div class="parent-row">
@@ -245,7 +245,7 @@
                     <input type="text" name="motherLastName" placeholder="Last Name">
                     <input type="text" name="motherFirstName" placeholder="First Name">
                     <input type="text" name="motherMiddleName" placeholder="Middle Name">
-                    <input type="tel" name="motherContactNo" placeholder="Contact Number">
+                    <input type="tel" name="motherContactNo" placeholder="Contact Number" maxlength="11">
                 </div>
 
                 <div class="parent-row">
@@ -253,7 +253,7 @@
                     <input type="text" name="guardianLastName" placeholder="Last Name">
                     <input type="text" name="guardianFirstName" placeholder="First Name">
                     <input type="text" name="guardianMiddleName" placeholder="Middle Name">
-                    <input type="tel" name="guardianContactNo" placeholder="Contact Number">
+                    <input type="tel" name="guardianContactNo" placeholder="Contact Number" maxlength="11">
                 </div>
             </section>
 

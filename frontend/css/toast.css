@@ -1,0 +1,45 @@
+.toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+
+    padding: 12px 18px;
+
+    color: white;
+
+    border-radius: 8px;
+
+    z-index: 9999;
+
+    animation: toastFade 3s ease forwards;
+}
+
+.toast.success {
+    background-color: #087b24;
+}
+
+.toast.error {
+    background-color: #a83b32;
+}
+
+@keyframes toastFade {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
