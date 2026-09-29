@@ -65,9 +65,50 @@ schoolDb.exec(`
             username TEXT NOT NULL UNIQUE,
             password_hash TEXT NOT NULL,
             full_name TEXT NOT NULL,
-            assigned_level TEXT NOT NULL
+            assigned_level TEXT NOT NULL,
+            is_admin INTEGER DEFAULT 0,
+            section_name TEXT
         )
     
+    `)
+
+schoolDb.exec(`
+        CREATE TABLE IF NOT EXISTS school(
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            school_name TEXT NOT NULL,
+            school_id TEXT NOT NULL,
+            region TEXT NOT NULL,
+            division TEXT NOT NULL,
+            school_head TEXT NOT NULL,
+            address TEXT NOT NULL,
+            email TEXT NOT NULL,
+            contact_no TEXT NOT NULL
+        )
+    `)
+
+schoolDb.exec(`
+        INSERT OR IGNORE INTO school(
+            id,
+            school_name,
+            school_id,
+            region,
+            division,
+            school_head,
+            address,
+            email,
+            contact_no
+        )
+        VALUES (
+            1,
+            'School name',
+            'SCHOOL-ID-HERE',
+            'Region',
+            'Division',
+            'School head',
+            'Address',
+            'Email',
+            'Contact Number'
+        )
     `)
 
 module.exports = schoolDb;
