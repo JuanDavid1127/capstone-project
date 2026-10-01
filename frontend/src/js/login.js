@@ -24,6 +24,7 @@ form.addEventListener("submit", (e) => {
         localStorage.setItem("token", data.token);
         localStorage.setItem( "grade_level", data.grade_level);
         localStorage.setItem("full_name", data.full_name)
+        localStorage.setItem("section_name", data.section_name);
         setTimeout(() => {
             window.location.href = "../pages/dashboard.html";
         }, 1200)

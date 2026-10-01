@@ -1,15 +1,21 @@
 const token = localStorage.getItem("token");
 const gradeLevel = localStorage.getItem("grade_level");
 const fullName = localStorage.getItem("full_name");
+const nameOfSection = localStorage.getItem("section_name");
 const available = document.querySelector("#available");
 const assigned = document.querySelector("#assigned");
 const gradeNumber = document.querySelectorAll(".gradeNumber");
 const teacherName = document.querySelector("#teacherName");
+const sectionName = document.querySelector("#sectionName");
 const countId = document.querySelector("#count");
 const logoutBtn = document.querySelector(".logout");
 const studentModal = document.querySelector("#studentModal");
 const closeModal = document.querySelector("#closeModal");
 const masterListBtn = document.querySelector("#save");
+const studentProfileBtn = document.querySelector("#exportSF1");
+const autoAssignBtn = document.querySelector("#autoAssign");
+
+sectionName.textContent = nameOfSection;
 
 teacherName.textContent = fullName;
 gradeNumber.forEach(text => {
@@ -30,6 +36,69 @@ masterListBtn.addEventListener("click", () => {
     const token = localStorage.getItem("token");
     downloadMasterList(token);
 })
+
+studentProfileBtn.addEventListener("click", () => {
+    const token = localStorage.getItem("token");
+    downloadStudentProfile(token);
+})
+
+autoAssignBtn.addEventListener("click", async () => {
+    const confirmed = confirm(
+        "This will distribute all unassigned students across all advisers in your grade level"
+    )
+
+    if(!confirmed) {
+        return;
+    } 
+    autoAssignBtn.disabled = true;
+    try {
+        const response = await fetch(
+            "http://localhost:3000/students/auto-assign",
+            {
+                method: "POST",
+                headers: {
+                    "Authorization" : `Bearer ${token}`
+                }
+            }
+        )
+
+        const data = await response.json();
+
+        if(!response.ok) {
+            showToast(
+                data.error || "Failed to assign students.",
+                "error"
+            )
+            return;
+        }
+
+        if(data.assigned === 0) {
+            showToast(
+                data.message || "There are no unassigned students.",
+                "success"
+            )
+        } else {
+            showToast(
+                `${data.assigned} student(s) assigned successfully.`,
+                "success"
+            )
+        }
+
+        await loadStudents(token);
+        await loadAssignedStudents(token);
+    } catch(error) {
+        console.error("Auto-assign error:", error);
+
+        showToast(
+            "Failed to assign students. Please try again",
+            "error"
+        )
+    } finally {
+        autoAssignBtn.disabled = false;
+    }
+})
+
+
 
 logoutBtn.addEventListener("click", () => {
     localStorage.clear();
@@ -59,6 +128,10 @@ available.addEventListener("click", (event) => {
             button.classList.remove("assign");
             button.classList.add("remove");
 
+            createDownloadCell(studentId);
+
+            row.appendChild(createDownloadCell(studentId));
+
             assigned.appendChild(row);
 
             countId.textContent = Number(countId.textContent) + 1;
@@ -70,6 +143,33 @@ available.addEventListener("click", (event) => {
 
         loadStudentProfile(studentId, token)
     }
+})
+
+assigned.addEventListener("click", async (event) => {
+    const btn = event.target.closest(".download-form");
+    if(!btn) return;
+
+    const studentId = btn.dataset.studentId;
+
+    const res = await fetch(`http://localhost:3000/export/registerform/${studentId}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+
+    if(!res.ok) {
+        const err = await res.json();
+        showToast(err.error || "Download failed, Try again");
+        return;
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `registration-form-${studentId}.pdf`;
+    a.click()
+    URL.revokeObjectURL(url);
 })
 
 assigned.addEventListener("click", (event) => {
@@ -88,6 +188,12 @@ assigned.addEventListener("click", (event) => {
         .then(data => {
         
             const row = button.closest("tr");
+
+            const downloadCell = row.querySelector(".download-form")?.closest("td");
+
+            if(downloadCell) {
+                downloadCell.remove();
+            }
 
             button.textContent = "Assign";
             button.classList.remove("remove");
@@ -127,6 +233,44 @@ function handleResponse(response) {
     return response.json();
 }
 
+async function downloadStudentProfile(token) {
+    try {
+        const response = await fetch("http://localhost:3000/export/sf1", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            console.log(data);
+            return;
+        }
+
+        const blob = await response.blob();
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const contentDisposition = response.headers.get("Content-Disposition");
+        let filename = "SF1.xlsx";
+
+        if(contentDisposition) {
+            const match = contentDisposition.match(/filename="?([^"]+)"?/);
+            if(match) {
+                filename = match[1];
+            }
+        }
+
+        a.href = url;
+        a.download = filename;
+        a.click();
+
+        URL.revokeObjectURL(url);
+    } catch(error) {
+        showToast(error.message, "error")
+    }
+}
+
 async function downloadMasterList(token) {
     try {
         const response = await fetch("http://localhost:3000/export/masterlist", {
@@ -138,11 +282,23 @@ async function downloadMasterList(token) {
             throw new Error("Request Failed");
         }
     const data = await response.blob();
+    const contentDisposition = response.headers.get("Content-Disposition");
+    let filename = "masterlist.docx";
+
+    if(contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if(match) {
+            filename = match[1];
+        }
+    }
     const url = URL.createObjectURL(data);
+
     const link = document.createElement("a");
     link.href = url;
-    link.download = "masterlist.docx";
+    link.download = filename;
+
     link.click();
+    
     URL.revokeObjectURL(url);
 
     } catch (error) {
@@ -165,6 +321,7 @@ function loadStudents(token) {
                             <td><b>${student.last_name}, ${student.first_name} ${student.middle_name}</b></td>
                             <td>${student.grade_level}</td>
                             <td>${student.lrn}</td>
+                            <td>${student.gwa}</td>
                             <td><button class="view-profile" data-student-id="${student.id}">View</button></td>
                             <td><button class="assign" data-student-id=${student.id}>Assign</button></td>
                         </tr>
@@ -190,8 +347,10 @@ function loadAssignedStudents(token) {
                             <td><b>${student.last_name}, ${student.first_name} ${student.middle_name}</b></td>
                             <td>${student.grade_level}</td>
                             <td>${student.lrn}</td>
+                            <td>${student.gwa}</td>
                             <td><button class="view-profile" data-student-id="${student.id}">View</button></td>
                             <td><button class="remove" data-student-id=${student.id}>Remove</button></td>
+                            <td><button class="download-form" data-student-id=${student.id}>Download</button></td>
                         </tr>
                         `
             assigned.innerHTML += row;
@@ -286,7 +445,23 @@ function loadStudentProfile(studentId, token) {
     })
 }
 
+function createDownloadCell(studentId) {
+    const downloadCell = document.createElement("td");
+
+    const downloadBtn = document.createElement("button");
+    downloadBtn.type = "button";
+    downloadBtn.className = "download-form";
+    downloadBtn.dataset.studentId = studentId;
+    downloadBtn.textContent = "Download"
+
+    downloadCell.appendChild(downloadBtn);
+
+    return downloadCell;
+
+}
+
 closeModal.addEventListener("click", () => {
     studentModal.classList.remove("show");
 })
+
 

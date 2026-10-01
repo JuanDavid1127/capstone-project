@@ -6,14 +6,19 @@ const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const app = express();
-const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, Tab } = require('docx');
+const {generateSF1} = require("./services/sf1");
+const {generateMasterlist} = require("./services/masterlist");
+const {generateRegistrationForm} = require("./services/registerform");
+const {selectStudentsForAdviser} = require("./services/autoAssign");
 const loginLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 10,
     message: "Too many login attempts, please try again later."
 })
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    exposedHeaders:["Content-Disposition"]
+}));
 
 app.post( '/students', (req, res) => {
 
@@ -147,11 +152,11 @@ app.post('/login', loginLimiter, async (req, res) => {
         const comparedPassword = await bcrypt.compare(req.body.password, adviser.password_hash);
         if(comparedPassword) {
             const token = jwt.sign(
-                {id: adviser.id, grade_level: adviser.assigned_level, full_name: adviser.full_name},
+                {id: adviser.id, grade_level: adviser.assigned_level, full_name: adviser.full_name, section: adviser.section_name},
                 process.env.JWT_SECRET,
                 {expiresIn: '1d'}
             )
-            res.json({message: "LOGIN SUCCESSFUL", token, grade_level: adviser.assigned_level, full_name: adviser.full_name});
+            res.json({message: "LOGIN SUCCESSFUL", token, grade_level: adviser.assigned_level, full_name: adviser.full_name, section_name: adviser.section_name});
         } else {
             res.status(401).send("Incorrect password");
         }
@@ -185,103 +190,78 @@ app.get('/students/assigned', authenticateToken, (req, res) => {
 })
 
 app.get('/export/masterlist', authenticateToken, async (req, res) => {
- try {
-    const adviser = req.adviser.id;
-    const stmt = schoolDb.prepare(`SELECT last_name, first_name, middle_name, extension_name, gender FROM students WHERE adviser_id = ? ORDER BY gender DESC, last_name COLLATE NOCASE ASC, first_name COLLATE NOCASE ASC`);
-    const students = stmt.all(adviser);
+    try {
+        const buffer = await generateMasterlist(req.adviser);
+        const filename = `${req.adviser.grade_level}_${req.adviser.section}_Masterlist.docx`
 
-    const males = students.filter(student => student.gender === "male");
-    const females = students.filter(student => student.gender === "female");
-    
-    const maleNames = males.map(student => studentName(student));
-    const femaleNames = females.map(student => studentName(student));
+        res.setHeader(
+            "Content-Type",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        );
 
-    const rows = [];
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${filename}"`
+        );
 
-    rows.push(
-        new TableRow({
-            children: [
-                new TableCell({
-                    children: [
-                        new Paragraph({
-                            children: [
-                                new TextRun({
-                                    text: "MALE",
-                                    bold: true
-                                })
-                            ]
-                        })
-                    ]
-                }),
-                new TableCell({
-                    children: [
-                        new Paragraph({
-                            children: [
-                                new TextRun({
-                                    text: "FEMALE",
-                                    bold: true
-                                })
-                            ]
-                        })
-                    ]
-                })
-            ]
+        res.send(buffer);
+    } catch(error) {
+        console.error(error);
+        res.status(500).json({
+            error: "Failed to generate Masterlist"
         })
-    );
-    const rowCount = Math.max( maleNames.length, femaleNames.length);
-    for (let i = 0; i < rowCount; i++) {
-        rows.push(
-            new TableRow({
-                children: [
-                    new TableCell({
-                        children: [
-                            new Paragraph(maleNames[i] || "")
-                        ]
-                    }),
-                    new TableCell({
-                        children: [
-                            new Paragraph(femaleNames[i] || "")
-                        ]
-                    })
-                ]
-            })
-        )
     }
-    const table = new Table({
-        rows: rows,
-        columnWidths: [4859, 4820],
-        width: {
-            size: 9679 ,
-            type: WidthType.DXA
-        }
-    })
-    const doc = new Document({
-        sections: [
-            {
-                children: [
-                    table
-                ]
-            }
-        ]
-    })
-    const buffer = await Packer.toBuffer(doc);
-    res.setHeader(
-        "Content-Type",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
-    res.setHeader(
-        "Content-Disposition",
-        'attachment; filename="masterlist.docx"'
-    )
-    res.send(buffer);
-    
- } catch (error) {
-    console.error(error);
-    res.status(500).json({
-        error: "Failed to generate masterlist"
-    })
- }
 })
+
+app.get('/export/registerform/:studentId', authenticateToken, async (req, res) => {
+    try {
+        const studentId = Number(req.params.studentId);
+        if (!Number.isInteger(studentId)) {
+            return res.status(400).json({ error: "Invalid student id" });
+        }
+
+        const buffer = await generateRegistrationForm(studentId, req.adviser.id);
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="registration-form-${studentId}.pdf"`
+        );
+        res.send(buffer);
+    } catch (error) {
+        console.error("Registration form export failed:", error);
+        res.status(error.status || 500).json({ error: error.message });
+    }
+});
+
+app.get("/export/sf1", authenticateToken, async (req, res) => {
+    try {
+        const adviserId = req.adviser.id;
+        const workbook = await generateSF1(adviserId);
+        const filename = `${req.adviser.grade_level}_${req.adviser.section}_SF1.xlsx`;
+
+        res.setHeader(
+            "Content-Type",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${filename}"`
+        );
+
+        await workbook.xlsx.write(res);
+        res.end();
+    } catch (error) {
+        console.error(error);
+
+        if (error.message.startsWith("Too many") || error.message.startsWith("No students")) {
+            return res.status(400).json({ error: error.message });
+        }
+
+        res.status(500).json({ error: "Failed to generate SF1" });
+    }
+});
 
 app.get('/students/:id', authenticateToken, (req, res) => {
     const studentStmt = schoolDb.prepare('SELECT * FROM students WHERE id = ?');
@@ -310,6 +290,160 @@ app.listen(3000, () => {
     console.log("The server is running at port 3000");
 })
 
+app.post(`/students/auto-assign`, authenticateToken, (req, res) => {
+    try {
+        const adviserId = req.adviser.id;
+        const gradeLevel = req.adviser.grade_level;
+
+        /*
+            Get every adviser assigned to this grade level.
+            These advisers are used to calculate the fixed quotas.
+        */
+        const advisers = schoolDb.prepare(`
+            SELECT
+                id,
+                full_name,
+                assigned_level,
+                section_name
+            FROM advisers
+            WHERE assigned_level = ?
+            AND COALESCE(is_admin, 0) = 0
+            ORDER BY id ASC
+        `).all(gradeLevel);
+
+        if (advisers.length === 0) {
+            return res.status(400).json({
+                error: "No advisers found for this grade level."
+            });
+        }
+
+        /*
+            Get EVERY student in the grade.
+
+            This is important because the quota is based on
+            the total grade population, not just unassigned students.
+        */
+        const allGradeStudents = schoolDb.prepare(`
+            SELECT
+                id,
+                lrn,
+                first_name,
+                middle_name,
+                last_name,
+                extension_name,
+                gender,
+                gwa,
+                adviser_id,
+                grade_level
+            FROM students
+            WHERE grade_level = ?
+            ORDER BY
+                gwa DESC,
+                last_name COLLATE NOCASE ASC,
+                first_name COLLATE NOCASE ASC
+        `).all(gradeLevel);
+
+        if (allGradeStudents.length === 0) {
+            return res.json({
+                message: "There are no students in this grade level.",
+                assigned: 0
+            });
+        }
+
+        /*
+            Only students that have not been assigned to an adviser
+            can be selected.
+        */
+        const unassignedStudents = allGradeStudents.filter(
+            student => student.adviser_id === null
+        );
+
+        if (unassignedStudents.length === 0) {
+            return res.json({
+                message: "There are no unassigned students for this grade level.",
+                assigned: 0
+            });
+        }
+
+        /*
+            Determine which students THIS adviser should receive.
+        */
+        const selection = selectStudentsForAdviser({
+            adviserId,
+            advisers,
+            allGradeStudents,
+            unassignedStudents
+        });
+
+        if (selection.selected.length === 0) {
+            return res.json({
+                message: "Your class has already reached its target size.",
+                assigned: 0,
+                target: selection.target,
+                currentCount: selection.currentCount,
+                remainingQuota: selection.remainingQuota
+            });
+        }
+
+        /*
+            Update only the selected students.
+
+            The transaction makes the selection and assignment
+            atomic.
+        */
+        const assignStudent = schoolDb.prepare(`
+            UPDATE students
+            SET adviser_id = ?
+            WHERE id = ?
+              AND adviser_id IS NULL
+        `);
+
+        const assignSelected = schoolDb.transaction((students) => {
+            let assignedCount = 0;
+
+            for (const student of students) {
+                const result = assignStudent.run(
+                    adviserId,
+                    student.id
+                );
+
+                /*
+                    A selected student should still be unassigned.
+                    If this unexpectedly changes, throw so the
+                    transaction rolls back.
+                */
+                if (result.changes !== 1) {
+                    throw new Error(
+                        `Failed to assign student ID ${student.id}.`
+                    );
+                }
+
+                assignedCount++;
+            }
+
+            return assignedCount;
+        });
+
+        const assignedCount = assignSelected(
+            selection.selected
+        );
+
+        return res.json({
+            message: "Students assigned successfully.",
+            assigned: assignedCount,
+            target: selection.target,
+            currentCount: selection.currentCount,
+            remainingQuota: selection.remainingQuota
+        });
+
+    } catch (error) {
+        console.error("Auto-assign error:", error);
+
+        return res.status(500).json({
+            error: error.message || "Failed to automatically assign students."
+        });
+    }
+});
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers.authorization;
@@ -327,15 +461,9 @@ function authenticateToken(req, res, next) {
     }
 }
 
-function studentName(student) {
-    const extensionName = student.extension_name ? ` ${student.extension_name}` : "";
-    const middleInitial = student.middle_name ? ` ${student.middle_name.charAt(0)}.` : "";
-    const fullName = `${student.last_name}, ${student.first_name}${middleInitial}${extensionName}`;
-    return fullName.toUpperCase();
-}
-
 async function createAdviser(req, res) {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const stmt = schoolDb.prepare('INSERT INTO advisers(username, password_hash, full_name, assigned_level) VALUES (?, ?, ?, ?)');
     res.send(stmt.run(req.body.username, hashedPassword, req.body.full_name, req.body.assigned_level));
 }
+

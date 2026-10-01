@@ -35,17 +35,17 @@
       <div class="heading"><div><h1>Students</h1><p>Unassigned students</p></div><span>UNASSIGNED</span></div>
       <div class="table-box"><table>
         <thead>
-          <tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th>View student Information</th><th>Action</th></tr>
+          <tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th>GWA</th><th>View student Information</th><th>Action</th></tr>
         </thead>
         <tbody id="available"></tbody>
       </table></div>
     </section>
 
     <section>
-      <div class="heading"><div><h1>Assigned Students</h1><p>Students assigned to your section</p></div><span class="green">SECTION</span></div>
+      <div class="heading"><div><h1>Assigned Students</h1><p>Students assigned to your section</p></div><span class="green" id="sectionName"></span></div>
       <div class="table-box"><table>
         <thead>
-          <tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th>View student Information</th><th>Action</th></tr>
+          <tr><th>Student Name</th><th>Grade</th><th>Learner Reference No.</th><th>GWA</th><th>View student Information</th><th>Action</th><th>Registation Form</th></tr>
         </thead>
         <tbody id="assigned"></tbody>
       </table></div>
@@ -55,6 +55,8 @@
   <div class="footer">
     <p id="status">Select students to assign them to your section.</p>
     <button id="save" type="button">Download Master List</button>
+    <button id="autoAssign" type="button">Auto Assign</button>
+    <button id="exportSF1">Export SF1</button>
   </div>
 </main>
 <!-- Student Profile Modal -->
