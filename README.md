@@ -4,12 +4,11 @@
 index.hmtl renamed into login.html
 added toast notification
 
+1/10/2026 - MAJOR CHANGES. added a auto-assign button where the primary rule is the GWA average and the second rule is the gender.
+there is a slight deviancy of 1 to 2 students at the last adviser who clicks. meaning the last adviser only gets the uneven students.
+
+also added downloadable PDF and SF1. though i havent made changes to the SF1. we can figure it out later
+
 configured and can now run on any machine, just create another file called ".env" and copy the .env.example contents
 
-login for teacher g7 is testadviserG7, Password is password123
-login for teacher g8 is testadviserG8, Password is password123
-login for teacher g9 is testadviserG9, Password is password123
-login for teacher g10 is testadviser, Password is password123
-login for teacher g11 is testadviserG11, Password is password123
-login for teacher g12 is testadviserG12, Password is password123
 
