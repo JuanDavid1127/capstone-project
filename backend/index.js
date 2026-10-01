@@ -295,21 +295,9 @@ app.post(`/students/auto-assign`, authenticateToken, (req, res) => {
         const adviserId = req.adviser.id;
         const gradeLevel = req.adviser.grade_level;
 
-        /*
-            Get every adviser assigned to this grade level.
-            These advisers are used to calculate the fixed quotas.
-        */
         const advisers = schoolDb.prepare(`
-            SELECT
-                id,
-                full_name,
-                assigned_level,
-                section_name
-            FROM advisers
-            WHERE assigned_level = ?
-            AND COALESCE(is_admin, 0) = 0
-            ORDER BY id ASC
-        `).all(gradeLevel);
+            SELECT id, full_name, assigned_level, section_name FROM advisers WHERE assigned_level = ? AND COALESCE(is_admin, 0) = 0 ORDER BY id ASC
+            `).all(gradeLevel);
 
         if (advisers.length === 0) {
             return res.status(400).json({
@@ -317,12 +305,6 @@ app.post(`/students/auto-assign`, authenticateToken, (req, res) => {
             });
         }
 
-        /*
-            Get EVERY student in the grade.
-
-            This is important because the quota is based on
-            the total grade population, not just unassigned students.
-        */
         const allGradeStudents = schoolDb.prepare(`
             SELECT
                 id,
@@ -350,13 +332,7 @@ app.post(`/students/auto-assign`, authenticateToken, (req, res) => {
             });
         }
 
-        /*
-            Only students that have not been assigned to an adviser
-            can be selected.
-        */
-        const unassignedStudents = allGradeStudents.filter(
-            student => student.adviser_id === null
-        );
+        const unassignedStudents = allGradeStudents.filter(student => student.adviser_id === null);
 
         if (unassignedStudents.length === 0) {
             return res.json({
@@ -364,16 +340,7 @@ app.post(`/students/auto-assign`, authenticateToken, (req, res) => {
                 assigned: 0
             });
         }
-
-        /*
-            Determine which students THIS adviser should receive.
-        */
-        const selection = selectStudentsForAdviser({
-            adviserId,
-            advisers,
-            allGradeStudents,
-            unassignedStudents
-        });
+        const selection = selectStudentsForAdviser({adviserId, advisers, allGradeStudents, unassignedStudents});
 
         if (selection.selected.length === 0) {
             return res.json({
@@ -385,48 +352,25 @@ app.post(`/students/auto-assign`, authenticateToken, (req, res) => {
             });
         }
 
-        /*
-            Update only the selected students.
-
-            The transaction makes the selection and assignment
-            atomic.
-        */
-        const assignStudent = schoolDb.prepare(`
-            UPDATE students
-            SET adviser_id = ?
-            WHERE id = ?
-              AND adviser_id IS NULL
-        `);
+        const assignStudent = schoolDb.prepare(`UPDATE students SET adviser_id = ? WHERE id = ? AND adviser_id IS NULL`);
 
         const assignSelected = schoolDb.transaction((students) => {
             let assignedCount = 0;
 
             for (const student of students) {
-                const result = assignStudent.run(
-                    adviserId,
-                    student.id
-                );
+                const result = assignStudent.run(adviserId, student.id);
 
-                /*
-                    A selected student should still be unassigned.
-                    If this unexpectedly changes, throw so the
-                    transaction rolls back.
-                */
                 if (result.changes !== 1) {
                     throw new Error(
                         `Failed to assign student ID ${student.id}.`
                     );
                 }
-
                 assignedCount++;
             }
-
             return assignedCount;
         });
 
-        const assignedCount = assignSelected(
-            selection.selected
-        );
+        const assignedCount = assignSelected(selection.selected);
 
         return res.json({
             message: "Students assigned successfully.",
@@ -438,7 +382,6 @@ app.post(`/students/auto-assign`, authenticateToken, (req, res) => {
 
     } catch (error) {
         console.error("Auto-assign error:", error);
-
         return res.status(500).json({
             error: error.message || "Failed to automatically assign students."
         });
