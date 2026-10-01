@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const app = express();
-const {generateSF1} = require("./services/sf1");
+const { generateStudentProfile } = require("./services/sf1");
 const {generateMasterlist} = require("./services/masterlist");
 const {generateRegistrationForm} = require("./services/registerform");
 const {selectStudentsForAdviser} = require("./services/autoAssign");
@@ -237,7 +237,7 @@ app.get('/export/registerform/:studentId', authenticateToken, async (req, res) =
 app.get("/export/sf1", authenticateToken, async (req, res) => {
     try {
         const adviserId = req.adviser.id;
-        const workbook = await generateSF1(adviserId);
+        const workbook = await generateStudentProfile (adviserId);
         const filename = `${req.adviser.grade_level}_${req.adviser.section}_SF1.xlsx`;
 
         res.setHeader(
