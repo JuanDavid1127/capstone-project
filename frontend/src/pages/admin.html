@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="../../css/admin.css">
+<link rel="stylesheet" href="../../css/toast.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="../js/toast.js" defer></script>
+<script src="../js/admin.js" defer></script>
+</head>
+
+<body>
+
+<header>
+  <div class="wrapper header">
+    <div class="brand">
+      <div class="logo"><img class="logo-img" src="../img/Group 2.png" alt=""></div>
+      <div><strong>Colegio de San Pascual Baylon</strong><small>Obando, Bulacan</small></div>
+    </div>
+    
+    <div class="profile">
+      <img src="../img/vecteezy_profile-default-icon-design-template_50018408.jpg" alt="Admin profile">
+      <div><strong id="adminName">Administrator</strong><small>System Administrator</small></div>
+      <button id="logout" class="logout btn"><img id="logout-logo" src="../icons/logout-logo.svg" alt="logout"></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrapper">
+
+  <div class="heading page-heading">
+    <div><h1>Administration</h1><p>Manage advisers and monitor system activity</p></div>
+    <span>ADMIN</span>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="advisers">Advisers</button>
+    <button class="tab" data-tab="log">Activity Log</button>
+    <button class="tab" data-tab="invite">Invite Adviser</button>
+  </nav>
+
+  <!-- Overview -->
+
+  <section id="overview" class="tab-content active">
+
+    <div class="heading">
+      <div><h1>Overview</h1><p>Current system statistics</p></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span>Advisers</span><strong id="totalAdvisers">0</strong></div>
+      <div class="stat"><span>Students</span><strong id="totalStudents">0</strong></div>
+    </div>
+
+    <div class="dashboard">
+
+      <section class="card">
+        <div class="heading">
+          <div><h2>Adviser Summary</h2><p>Current adviser status</p></div>
+        </div>
+
+        <div class="summary">
+          <div><span>Active Advisers</span><strong id="activeAdvisers">0</strong></div>
+          <div><span>Pending Approval</span><strong id="pendingAdvisers">0</strong></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="heading">
+          <div><h2>Recent Activity</h2><p>Latest system activity</p></div>
+        </div>
+
+        <div id="recentActivity" class="activity">
+          <p class="empty">No recent activity.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="heading">
+          <div><h2>Grade Coverage</h2><p>Students and advisers per grade</p></div>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Grade</th><th>Students</th><th>Unassigned</th><th>Advisers</th></tr>
+          </thead>
+          <tbody id="gradeCoverage"></tbody>
+        </table>
+      </section>
+
+    </div>
+
+  </section>
+
+  <!-- Advisers -->
+
+  <section id="advisers" class="tab-content">
+
+    <div class="heading">
+      <div><h1>Advisers</h1><p>Registered advisers</p></div>
+      <button id="inviteButton" class="primary">+ Invite Adviser</button>
+    </div>
+
+    <div class="toolbar">
+      <label class="search">⌕ <input id="adviserSearch" type="search" placeholder="Search advisers..."></label>
+      <div><b id="adviserCount">0</b> advisers</div>
+    </div>
+
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr><th>Adviser</th><th>Username</th><th>Grade</th><th>Section</th><th>Students</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody id="adviserTable"></tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- Activity Log -->
+
+  <section id="log" class="tab-content">
+
+    <div class="heading">
+      <div><h1>Activity Log</h1><p>System actions and account activity</p></div>
+    </div>
+
+    <div class="toolbar">
+      <label class="search">⌕ <input id="logSearch" type="search" placeholder="Search activity..."></label>
+
+      <select id="logFilter">
+        <option value="all">All Activity</option>
+        <option value="login">Login</option>
+        <option value="student">Student</option>
+        <option value="adviser">Adviser</option>
+        <option value="system">System</option>
+      </select>
+    </div>
+
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr><th>Date & Time</th><th>User</th><th>Action</th><th>Details</th></tr>
+        </thead>
+        <tbody id="activityTable"></tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- Invite -->
+
+  <section id="invite" class="tab-content">
+
+    <div class="heading">
+      <div><h1>Invite Adviser</h1><p>Share one link or QR code with new advisers</p></div>
+    </div>
+
+    <section class="card">
+      <p>Anyone with this link can create a pending account. You still approve each one and set their grade. The link lasts 7 days.</p>
+
+      <div class="invite-actions">
+        <button id="generateInvite" class="primary" type="button">Generate Link</button>
+        <button id="regenerateInvite" type="button">Revoke Old Links and Generate New</button>
+      </div>
+
+      <div id="generatedInvite" class="generated" hidden>
+        <div class="invite-link">
+          <input id="inviteLink" type="text" readonly>
+          <button id="copyInvite" type="button">Copy</button>
+        </div>
+
+        <div id="qr"></div>
+      </div>
+    </section>
+
+  </section>
+
+</main>
+
+</body>
+</html>

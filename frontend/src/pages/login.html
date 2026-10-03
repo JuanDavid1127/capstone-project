@@ -11,46 +11,79 @@
     <script src="../js/toast.js" defer></script>
     <title>Login Page</title>
 </head>
+
 <body>
-    <div id="loading">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-    </div>
-    <div class="wrapper">
-        <div class="left-container">
-            <div class="title-container">
-                <div class="logo"><img src="./src/img/Group 2.png" alt=""></div>
-                <div class="title-text">
-                    <img class="main-text" src="./src/img/Colegio de San Pascual Baylon.png" alt="">
-                    <img class="sub-text" src="./src/img/Pag-asa, Obando, Bulacan.png" alt="">
-                </div>
+
+<div id="loading">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+</div>
+
+<div class="wrapper">
+
+    <div class="left-container">
+        <div class="title-container">
+            <div class="logo">
+                <img src="../img/Group 2.png" alt="School logo">
+            </div>
+
+            <div class="title-text">
+                <img class="main-text" src="../img/Colegio de San Pascual Baylon.png" alt="Colegio de San Pascual Baylon">
+                <img class="sub-text" src="../img/Pag-asa, Obando, Bulacan.png" alt="Pag-asa, Obando, Bulacan">
             </div>
         </div>
-        <div class="right-container">
-            <div class="mobile-logo">
-                <div class="title-text">
-                    <img class="main-text" src="./src/img/Colegio de San Pascual Baylon.png" alt="">
-                    <img class="sub-text" src="./src/img/Pag-asa, Obando, Bulacan.png" alt="">
-                </div>
+
+        <div class="welcome-text">
+            <h1>Digitized Enrollment and Automated Advisory System</h1>
+            <p>Manage student enrollment, records, and advisory assignments in one place.</p>
+        </div>
+    </div>
+
+    <div class="right-container">
+
+        <div class="mobile-logo">
+            <div class="logo">
+                <img src="./src/img/Group 2.png" alt="School logo">
             </div>
-            <form action="" class="form" id="loginForm">
+
+            <div class="title-text">
+                <img class="main-text" src="./src/img/Colegio de San Pascual Baylon.png" alt="Colegio de San Pascual Baylon">
+                <img class="sub-text" src="./src/img/Pag-asa, Obando, Bulacan.png" alt="Pag-asa, Obando, Bulacan">
+            </div>
+        </div>
+
+        <form action="" class="form" id="loginForm">
+
+            <div class="form-heading">
                 <h2 class="welcome">Welcome</h2>
-                <div class="input-card">
-                        <div class="input-container">
-                        <label for="username">Username:</label>
-                        <input type="text" name="username" id="username" required placeholder="username">
-                    </div>
-                    <div class="input-container">
-                        <label for="password">password:</label>
-                        <input type="password" id="password" name="password" placeholder="password">
-                    </div>
-                    <div class="password-container">
-                        <a href="#">forgot password?</a>
-                    </div>
-                    <button class="submitBtn" type="submit">Log in</button>
+                <p>Sign in to your account</p>
+            </div>
+
+            <div class="input-card">
+
+                <div class="input-container">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" required placeholder="Enter your username">
                 </div>
-            </form>
-        </div>
+
+                <div class="input-container">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+
+                <div class="password-container">
+                    <a href="#">Forgot password?</a>
+                </div>
+
+                <button class="submitBtn" type="submit">Log in</button>
+
+            </div>
+
+        </form>
+
     </div>
+
+</div>
+
 </body>
 </html>

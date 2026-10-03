@@ -1,0 +1,544 @@
+/* ================= GENERAL ================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #222;
+}
+
+
+/* ================= HEADER ================= */
+
+.header {
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid #dddddd;
+}
+
+.header-container {
+    width: 96%;
+    max-width: 1400px;
+    min-height: 90px;
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.school-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 240px;
+}
+
+.logo-placeholder {
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+    border: 2px solid #198754;
+
+    object-fit: cover;
+
+    flex-shrink: 0;
+}
+
+.school-name h1 {
+    font-family: "UnifrakturCook", "Old English Text MT", serif;
+    font-size: 17px;
+    color: #333;
+}
+
+.school-name p {
+    font-family: "UnifrakturCook", "Old English Text MT", serif;
+    font-size: 9px;
+    color: #555;
+}
+
+
+/* ================= NAVIGATION ================= */
+
+.navigation {
+    display: flex;
+    align-items: center;
+    gap: 38px;
+}
+
+.navigation a {
+    text-decoration: none;
+    color: #222;
+    font-weight: bold;
+    font-size: 14px;
+
+    padding: 10px 3px;
+    border-bottom: 2px solid transparent;
+}
+
+.navigation a:hover,
+.navigation a.active {
+    color: #198754;
+    border-bottom-color: #087a35;
+}
+
+
+/* ================= LOGIN ================= */
+
+.login-button {
+    border: 1px solid #8ac9a5;
+    background: #e4f6eb;
+
+    padding: 9px 38px;
+    border-radius: 7px;
+
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background: #c9efd7;
+}
+
+
+/* ================= MENU ================= */
+
+.menu-button {
+    display: none;
+
+    border: none;
+    background: transparent;
+
+    font-size: 30px;
+    cursor: pointer;
+}
+
+
+/* ================= HERO ================= */
+
+.hero {
+    width: 100%;
+    padding: 30px 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            #fff9d9 0%,
+            #edffd8 45%,
+            #ffffff 100%
+        );
+}
+
+.hero-content {
+    width: 96%;
+    max-width: 1400px;
+    min-height: 290px;
+    margin: auto;
+
+    display: grid;
+    grid-template-columns: 38% 62%;
+
+    align-items: center;
+    gap: 20px;
+}
+
+.hero-text {
+    padding-left: 30px;
+}
+
+.hero-text h2,
+.hero-text h3 {
+    font-size: clamp(30px, 4vw, 55px);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.hero-text h2 {
+    color: #087a35;
+}
+
+.hero-text h3 {
+    color: #e3b800;
+}
+
+
+/* ================= HERO IMAGE ================= */
+
+.hero-image {
+    width: 100%;
+    height: 290px;
+
+    border-radius: 3px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* ================= ABOUT ================= */
+
+.about-section {
+    width: 96%;
+    max-width: 1400px;
+    margin: 20px auto;
+}
+
+.about-content {
+    display: grid;
+    grid-template-columns: 62% 38%;
+
+    min-height: 300px;
+
+    background: #d6f7df;
+
+    border: 2px solid #65d99a;
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+.about-text {
+    padding: 25px 35px;
+}
+
+.about-text h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.about-text p {
+    font-size: 15px;
+    line-height: 1.45;
+    margin-bottom: 15px;
+}
+
+
+/* ABOUT IMAGE */
+
+.about-image {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* ================= LEARN BUTTON ================= */
+
+.learn-button {
+    background: #59ef8c;
+
+    border: 2px solid #13883f;
+    border-radius: 7px;
+
+    padding: 12px 45px;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.learn-button:hover {
+    background: #39d973;
+}
+
+
+/* ================= ADMISSION ================= */
+
+.admission-section {
+    width: 96%;
+    max-width: 1400px;
+
+    margin: 35px auto;
+
+    text-align: left;
+}
+
+.admission-section > h2 {
+    color: #087a35;
+
+    font-size: clamp(32px, 4vw, 50px);
+
+    margin: 0 0 20px 35px;
+}
+
+.admission-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 20px;
+
+    padding: 0 35px;
+}
+
+.admission-card {
+    width: 100%;
+}
+
+.admission-image {
+    width: 100%;
+    height: 180px;
+
+    border-radius: 4px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* ================= ENROLL BUTTON ================= */
+
+.enroll-button {
+    display: block;
+
+    margin: 30px auto 10px;
+
+    min-width: 200px;
+
+    padding: 12px 35px;
+
+    background: #fff7a8;
+
+    border: 2px solid #d8b800;
+    border-radius: 7px;
+
+    font-weight: bold;
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+.enroll-button:hover {
+    background: #ffef70;
+}
+
+
+/* ================= FOOTER ================= */
+
+footer {
+    text-align: center;
+
+    padding: 25px;
+
+    color: #666;
+
+    font-size: 13px;
+}
+
+
+/* ================= TABLET ================= */
+
+@media (max-width: 900px) {
+
+    .header-container {
+        min-height: 75px;
+    }
+
+    .navigation {
+        gap: 15px;
+    }
+
+    .navigation a {
+        font-size: 12px;
+    }
+
+    .login-button {
+        padding: 8px 20px;
+    }
+
+
+    /* HERO */
+
+    .hero-content {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .hero-text {
+        padding-left: 10px;
+    }
+
+    .hero-text h2,
+    .hero-text h3 {
+        font-size: 30px;
+    }
+
+
+    /* ABOUT */
+
+    .about-content {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .about-text {
+        padding: 20px;
+    }
+
+    .about-text p {
+        font-size: 12px;
+    }
+
+
+    /* ADMISSION */
+
+    .admission-container {
+        gap: 10px;
+        padding: 0 10px;
+    }
+
+    .admission-image {
+        height: 130px;
+    }
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 600px) {
+
+    .header-container {
+        width: 92%;
+        min-height: 65px;
+    }
+
+    .school-brand {
+        min-width: 0;
+    }
+
+    .logo-placeholder {
+        width: 42px;
+        height: 42px;
+    }
+
+    .school-name h1 {
+        font-size: 11px;
+    }
+
+    .school-name p {
+        font-size: 7px;
+    }
+
+
+    /* MOBILE NAVIGATION */
+
+    .navigation,
+    .login-button {
+        display: none;
+    }
+
+    .menu-button {
+        display: block;
+    }
+
+
+    /* HERO */
+
+    .hero {
+        padding: 20px 0;
+    }
+
+    .hero-content {
+        width: 92%;
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 20px;
+    }
+
+    .hero-text {
+        width: 100%;
+        padding: 10px 0;
+
+        text-align: left;
+    }
+
+    .hero-text h2,
+    .hero-text h3 {
+        font-size: 30px;
+    }
+
+    .hero-image {
+        width: 100%;
+        height: 220px;
+    }
+
+
+    /* ABOUT */
+
+    .about-section {
+        width: 92%;
+    }
+
+    .about-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .about-text {
+        padding: 20px;
+    }
+
+    .about-text h2 {
+        font-size: 18px;
+    }
+
+    .about-text p {
+        font-size: 12px;
+    }
+
+    .about-image {
+        min-height: 220px;
+    }
+
+
+    /* ADMISSION */
+
+    .admission-section {
+        width: 92%;
+    }
+
+    .admission-section > h2 {
+        margin-left: 0;
+        font-size: 32px;
+    }
+
+    .admission-container {
+        grid-template-columns: 1fr 1fr;
+
+        gap: 12px;
+
+        padding: 0;
+    }
+
+    .admission-image {
+        height: 130px;
+    }
+
+    .enroll-button {
+        margin-top: 25px;
+    }
+
+
+    /* FOOTER */
+
+    footer {
+        font-size: 11px;
+    }
+}

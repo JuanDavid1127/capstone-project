@@ -28,8 +28,8 @@ function normalizeGender(gender) {
 
 function createGwaGroups(students) {
     const sorted = [...students].sort((a, b) => {
-        const gwaA = Number(a.gwa);
-        const gwaB = Number(b.gwa);
+        const gwaA = Number.isFinite(Number(a.gwa)) ? Number(a.gwa) : 0;
+        const gwaB = Number.isFinite(Number(b.gwa)) ? Number(b.gwa) : 0;
 
         if (gwaB !== gwaA) {
             return gwaB - gwaA;
@@ -39,15 +39,12 @@ function createGwaGroups(students) {
     });
 
     const total = sorted.length;
-
     const topEnd = Math.ceil(total / 3);
     const middleEnd = Math.ceil((total * 2) / 3);
 
     return {
         top: sorted.slice(0, topEnd),
-
         middle: sorted.slice(topEnd,middleEnd),
-
         bottom: sorted.slice(middleEnd)
     };
 }
@@ -62,19 +59,16 @@ function calculateTargets(totalStudents, advisers) {
     }
 
     const base = Math.floor(totalStudents / sortedAdvisers.length);
-
     const remainder = totalStudents % sortedAdvisers.length;
 
     return sortedAdvisers.map((adviser, index) => ({
         id: adviser.id,
-
         target: base + (index < remainder ? 1 : 0)
     }));
 }
 
 function calculateTierTargets(gwaGroups,adviserTarget) {
     const tiers = ["top", "middle", "bottom" ];
-
     const totalStudents = tiers.reduce( (sum, tier) => sum + gwaGroups[tier].length, 0);
 
     if (totalStudents === 0) {
@@ -82,22 +76,15 @@ function calculateTierTargets(gwaGroups,adviserTarget) {
     }
 
     const result = {};
-
     const fractionalParts = [];
-
     let assigned = 0;
 
     for (const tier of tiers) {
         const size = gwaGroups[tier].length;
-
         const ideal = (size / totalStudents) * adviserTarget;
-
         const floorValue = Math.floor(ideal);
-
         result[tier] = floorValue;
-
         assigned += floorValue;
-
         fractionalParts.push({ tier, fraction:ideal - floorValue});
     }
 
@@ -107,9 +94,7 @@ function calculateTierTargets(gwaGroups,adviserTarget) {
         if (b.fraction !== a.fraction) {
             return b.fraction - a.fraction;
         }
-
         const order = {top: 0, middle: 1,bottom: 2};
-
         return order[a.tier] - order[b.tier];
     });
 
@@ -117,29 +102,19 @@ function calculateTierTargets(gwaGroups,adviserTarget) {
 
     while (remaining > 0 && fractionalParts.length > 0) {
         const tier = fractionalParts[index].tier;
-
         result[tier]++;
-
         remaining--;
-
         index++;
-
         if (index >= fractionalParts.length) {
             index = 0;
         }
     }
-
     return result;
 }
 
-function calculateGenderTarget(
-    tierStudents,
-    targetCount
-) {
+function calculateGenderTarget(tierStudents, targetCount) {
     const maleCount = tierStudents.filter(student =>normalizeGender(student.gender) ==="male").length;
-
     const femaleCount = tierStudents.filter(student =>normalizeGender(student.gender) ==="female").length;
-
     const knownGenderCount =maleCount + femaleCount;
 
     if (knownGenderCount === 0) {
@@ -147,18 +122,13 @@ function calculateGenderTarget(
     }
 
     const idealMale = (maleCount / knownGenderCount) *targetCount;
-
     const idealFemale = (femaleCount / knownGenderCount) * targetCount;
-
     let maleTarget = Math.floor(idealMale);
-
     let femaleTarget = Math.floor(idealFemale);
-
     let remaining = targetCount - maleTarget - femaleTarget;
 
     while (remaining > 0) {
         const maleFraction = idealMale - maleTarget;
-
         const femaleFraction = idealFemale - femaleTarget;
 
         if (maleFraction >= femaleFraction) {
@@ -166,32 +136,24 @@ function calculateGenderTarget(
         } else {
             femaleTarget++;
         }
-
         remaining--;
     }
 
     maleTarget = Math.min(maleTarget, maleCount);
-
     femaleTarget = Math.min(femaleTarget, femaleCount);
-
+    
     return {male: maleTarget, female: femaleTarget};
 }
 
 
 function selectBalancedCandidates(candidates, take, currentGenderCounts, targetGenderCounts) {
     const remaining = shuffle(candidates);
-
     const selected = [];
-
-    let maleCount =
-        currentGenderCounts.male;
-
-    let femaleCount =
-        currentGenderCounts.female;
+    let maleCount = currentGenderCounts.male;
+    let femaleCount = currentGenderCounts.female;
 
     while (selected.length < take && remaining.length > 0) {
         const maleNeed = targetGenderCounts.male - maleCount;
-
         const femaleNeed = targetGenderCounts.female - femaleCount;
 
         let preferredGender;
@@ -215,11 +177,8 @@ function selectBalancedCandidates(candidates, take, currentGenderCounts, targetG
         }
 
         const chosen =candidateIndexes[0];
-
         selected.push(chosen.student);
-
         remaining.splice(chosen.index,1);
-
         const gender =normalizeGender(chosen.student.gender);
 
         if (gender === "male") {
@@ -233,87 +192,75 @@ function selectBalancedCandidates(candidates, take, currentGenderCounts, targetG
 }
 
 function selectStudentsForAdviser({adviserId, advisers, allGradeStudents, unassignedStudents}) {
-    
-    const adviser = advisers.find(item =>Number(item.id) === Number(adviserId));
+    const adviser = advisers.find(item => Number(item.id) === Number(adviserId));
 
     if (!adviser) {
         throw new Error("Adviser was not found.");
     }
 
-    const targets = calculateTargets(allGradeStudents.length, advisers);
-
-    const adviserTarget = targets.find( item => Number(item.id) === Number(adviserId));
-
-    if (!adviserTarget) {
-        throw new Error("Could not calculate adviser target.");
-    }
-
-    const target =
-        adviserTarget.target;
-
+    // Smallest class size every adviser must reach. Math.max keeps it at 1 when
+    // there are fewer students than advisers.
+    const baseSize = Math.max(1, Math.floor(allGradeStudents.length / advisers.length));
 
     const currentStudents = allGradeStudents.filter(student => Number(student.adviser_id) === Number(adviserId));
-
     const currentCount = currentStudents.length;
 
-    if (currentCount >= target) {
-        return {selected: [], target, currentCount, remainingQuota: 0};
+    if (currentCount >= baseSize) {
+        return {selected: [], target: currentCount, currentCount, remainingQuota: 0};
     }
 
-    const remainingQuota =target - currentCount;
+    // Advisers who still need to fill a class (the current adviser always counts)
+    const advisersStillToFill = advisers.filter(item => {
+        if (Number(item.id) === Number(adviserId)) return true;
+        const count = allGradeStudents.filter(student => Number(student.adviser_id) === Number(item.id)).length;
+        return count < baseSize;
+    }).length;
+
+    const remainingQuota = Math.min(
+        Math.ceil(unassignedStudents.length / advisersStillToFill),
+        unassignedStudents.length
+    );
+    const target = currentCount + remainingQuota;
 
     const gwaGroups = createGwaGroups(allGradeStudents);
-
     const studentTierMap = new Map();
 
-    for (const tierName of ["top","middle","bottom"]) {
+    for (const tierName of ["top", "middle", "bottom"]) {
         for (const student of gwaGroups[tierName]) {
-            studentTierMap.set(
-                student.id,
-                tierName
-            );
+            studentTierMap.set(student.id, tierName);
         }
     }
 
     const tierTargets = calculateTierTargets(gwaGroups, target);
-
     const currentTierCounts = {top: 0, middle: 0, bottom: 0};
 
     for (const student of currentStudents) {
         const tier = studentTierMap.get(student.id);
-
         if (tier) currentTierCounts[tier]++;
     }
 
     const tierNeeds = {
-        top: Math.max(0, tierTargets.top -currentTierCounts.top),
-
-        middle: Math.max(0,tierTargets.middle - currentTierCounts.middle ),
-
+        top: Math.max(0, tierTargets.top - currentTierCounts.top),
+        middle: Math.max(0, tierTargets.middle - currentTierCounts.middle),
         bottom: Math.max(0, tierTargets.bottom - currentTierCounts.bottom)
     };
 
     const selected = [];
 
     for (const tierName of ["top", "middle", "bottom"]) {
-        if (
-            selected.length >= remainingQuota
-        ) {
+        if (selected.length >= remainingQuota) {
             break;
         }
 
         const tierNeed = Math.min(tierNeeds[tierName], remainingQuota - selected.length);
-
         if (tierNeed <= 0) continue;
 
         const candidates = unassignedStudents.filter(student => studentTierMap.get(student.id) === tierName);
-
         if (candidates.length === 0) continue;
 
-        const currentTierStudents = currentStudents.filter(student =>studentTierMap.get(student.id) === tierName);
-
+        const currentTierStudents = currentStudents.filter(student => studentTierMap.get(student.id) === tierName);
         const currentGenderCounts = {
-            male:currentTierStudents.filter(student =>normalizeGender(student.gender) === "male").length,
+            male: currentTierStudents.filter(student => normalizeGender(student.gender) === "male").length,
             female: currentTierStudents.filter(student => normalizeGender(student.gender) === "female").length
         };
 
@@ -323,23 +270,16 @@ function selectStudentsForAdviser({adviserId, advisers, allGradeStudents, unassi
         selected.push(...selectedFromTier);
     }
 
-    if (
-        selected.length < remainingQuota
-    ) {
+    if (selected.length < remainingQuota) {
         const selectedIds = new Set(selected.map(student => student.id));
-
         const fallbackCandidates = shuffle(unassignedStudents.filter(student => !selectedIds.has(student.id)));
-
         const fallbackNeeded = remainingQuota - selected.length;
 
-        selected.push( ...fallbackCandidates.slice(0, fallbackNeeded) );
+        selected.push(...fallbackCandidates.slice(0, fallbackNeeded));
     }
 
-    return {
-        selected, target, currentCount, remainingQuota
-    };
+    return {selected, target, currentCount, remainingQuota};
 }
-
 
 module.exports = {
     shuffle, normalizeGender, createGwaGroups, calculateTargets,

@@ -12,23 +12,25 @@ form.addEventListener("submit", (e) => {
         headers: {"Content-Type" : "application/json"},
         body: JSON.stringify({username : username.value, password : password.value})
     })
-    .then(response => {
-        if(!response.ok) {
-            throw new error("Wrong Username or Password");
+    .then(async response => {
+        if (!response.ok) {
+            const message = await response.text();
+            throw new Error(message || "Wrong Username or Password");
         }
         return response.json();
     })
     .then(data => {
-        showToast("logged in Successfully", "success");
-        loading.style.display = "none";
-        localStorage.setItem("token", data.token);
-        localStorage.setItem( "grade_level", data.grade_level);
-        localStorage.setItem("full_name", data.full_name)
-        localStorage.setItem("section_name", data.section_name);
-        setTimeout(() => {
-            window.location.href = "../pages/dashboard.html";
-        }, 1200)
-    })
+    showToast("logged in Successfully", "success");
+    loading.style.display = "none";
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("grade_level", data.grade_level);
+    localStorage.setItem("full_name", data.full_name);
+    localStorage.setItem("section_name", data.section_name);
+    const destination = data.is_admin ? "../pages/admin.html" : "../pages/dashboard.html";
+    setTimeout(() => {
+        window.location.href = destination;
+    }, 1200);
+})
     .catch(error => {
         showToast(error.message, "error");
         loading.style.display = "none";

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../../css/cssReset.css">
+    <link rel="stylesheet" href="../../css/adviser-signup.css">
+    <link rel="stylesheet" href="../../css/loadingAnim.css">
+    <link rel="stylesheet" href="../../css/toast.css">
+
+    <script src="../js/adviser-signup.js" defer></script>
+    <script src="../js/toast.js" defer></script>
+
+    <title>Adviser Registration</title>
+</head>
+
+<body>
+
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Creating your account...</p>
+    </div>
+
+    <main class="page">
+
+        <section class="signup-card">
+
+            <div class="school-header">
+
+                <div class="logo">
+                    <img src="../img/Group 2.png" alt="Colegio de San Pascual Baylon">
+                </div>
+
+                <div class="school-name">
+                    <strong>Colegio de San Pascual Baylon</strong>
+                    <span>Obando, Bulacan</span>
+                </div>
+
+            </div>
+
+            <div class="heading">
+                <span class="badge">ADVISER REGISTRATION</span>
+                <h1>Create Adviser Account</h1>
+                <p>
+                    Register your adviser account using the invitation
+                    provided by the school administrator.
+                </p>
+            </div>
+
+            <div id="inviteStatus" class="invite-status">
+                <span class="status-icon">✓</span>
+                <div>
+                    <strong>Invitation link detected</strong>
+                    <p>Your invitation is ready to use.</p>
+                </div>
+            </div>
+
+            <form id="adviserSignupForm">
+
+                <div class="section">
+
+                    <div class="section-heading">
+                        <h2>Account Information</h2>
+                        <p>Create your login credentials.</p>
+                    </div>
+
+                    <div class="fields">
+
+                        <div class="field">
+                            <label for="username">
+                                Username <span>*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Enter username"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="password">
+                                Password <span>*</span>
+                            </label>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter password"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="confirmPassword">
+                                Confirm Password <span>*</span>
+                            </label>
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                placeholder="Confirm password"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="section">
+
+                    <div class="section-heading">
+                        <h2>Personal Information</h2>
+                        <p>Enter your name as it should appear in the system.</p>
+                    </div>
+
+                    <div class="fields name-fields">
+
+                        <div class="field">
+                            <label for="lastName">
+                                Last Name <span>*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="lastName"
+                                name="last_name"
+                                placeholder="Last name"
+                                autocomplete="family-name"
+                                required
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="firstName">
+                                First Name <span>*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="firstName"
+                                name="first_name"
+                                placeholder="First name"
+                                autocomplete="given-name"
+                                required
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="middleName">
+                                Middle Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="middleName"
+                                name="middle_name"
+                                placeholder="Middle name"
+                                autocomplete="additional-name"
+                            >
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="notice">
+                    <strong>What happens next?</strong>
+                    <p>
+                        Your account will be submitted for administrator
+                        approval. Your grade level will be
+                        assigned after your account is approved.
+                    </p>
+                </div>
+
+
+                <div class="actions">
+
+                    <a href="./login.html" class="cancel">
+                        Back to Login
+                    </a>
+
+                    <button
+                        type="submit"
+                        id="registerBtn"
+                        class="submit-btn"
+                    >
+                        Create Account
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
+

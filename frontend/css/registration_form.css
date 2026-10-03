@@ -2,6 +2,25 @@
    GENERAL
 ================================ */
 
+:root {
+    --green: #087a35;
+    --green-dark: #06662d;
+    --green-light: #eaf6ee;
+    --green-soft: #f3faf5;
+
+    --yellow: #d8b800;
+    --yellow-light: #fff9d9;
+
+    --background: #f5f5f5;
+    --white: #fff;
+
+    --text: #292929;
+    --muted: #777;
+    --border: #ddd;
+
+    --shadow: 0 2px 5px #0002;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -9,8 +28,10 @@
 body {
     margin: 0;
     padding: 30px;
-    background-color: #f5f5f5;
-    color: #292929;
+
+    background-color: var(--background);
+    color: var(--text);
+
     font-family: Arial, Helvetica, sans-serif;
     font-size: 13px;
 }
@@ -29,11 +50,15 @@ body {
 .form-card {
     width: 100%;
     max-width: 1100px;
-    background-color: #fff;
-    border: 1px solid #ddd;
+
+    background-color: var(--white);
+
+    border: 1px solid var(--border);
     border-radius: 18px;
+
     padding: 28px 32px;
-    box-shadow: 0 2px 5px #0002;
+
+    box-shadow: var(--shadow);
 }
 
 
@@ -45,17 +70,21 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
+
     padding-bottom: 22px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border);
+
     margin-bottom: 24px;
 }
 
 .school-logo {
     width: 65px;
     height: 65px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     flex-shrink: 0;
 }
 
@@ -67,14 +96,17 @@ body {
 
 .school-header h1 {
     margin: 0 0 5px;
+
     font-size: 21px;
     font-weight: 600;
-    color: #292929;
+
+    color: var(--text);
 }
 
 .school-header p {
     margin: 0;
-    color: #777;
+
+    color: var(--muted);
     font-size: 13px;
 }
 
@@ -85,16 +117,20 @@ body {
 
 h2 {
     margin: 26px 0 18px;
+
     font-size: 17px;
     font-weight: 600;
-    color: #292929;
+
+    color: var(--text);
 }
 
 h3 {
     margin: 0 0 10px;
+
     font-size: 14px;
     font-weight: 600;
-    color: #292929;
+
+    color: var(--text);
 }
 
 
@@ -106,6 +142,7 @@ h3 {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
+
     gap: 30px;
     margin-bottom: 25px;
 }
@@ -132,7 +169,8 @@ h3 {
 
 .check-box p {
     margin: 0 0 8px;
-    color: #777;
+
+    color: var(--muted);
     font-size: 12px;
 }
 
@@ -154,9 +192,11 @@ h3 {
 .section {
     margin-bottom: 25px;
     padding: 20px;
-    border: 1px solid #ddd;
+
+    border: 1px solid var(--border);
     border-radius: 12px;
-    background-color: #fff;
+
+    background-color: var(--white);
 }
 
 
@@ -172,9 +212,11 @@ h3 {
 
 .field label {
     margin-bottom: 7px;
+
     font-size: 12px;
     font-weight: 600;
-    color: #292929;
+
+    color: var(--text);
 }
 
 input[type="text"],
@@ -182,15 +224,23 @@ input[type="tel"],
 select {
     width: 100%;
     height: 40px;
+
     padding: 0 11px;
-    border: 1px solid #ddd;
+
+    border: 1px solid var(--border);
     border-radius: 6px;
-    background-color: #fff;
-    color: #292929;
+
+    background-color: var(--white);
+    color: var(--text);
+
     font-family: inherit;
     font-size: 13px;
+
     outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 input[type="text"]::placeholder,
@@ -201,8 +251,8 @@ input[type="tel"]::placeholder {
 input[type="text"]:focus,
 input[type="tel"]:focus,
 select:focus {
-    border-color: #3269b3;
-    box-shadow: 0 0 0 2px #3269b322;
+    border-color: #8ac9a5;
+    box-shadow: 0 0 0 2px #087a3522;
 }
 
 
@@ -213,26 +263,33 @@ select:focus {
 #gradeLevel {
     width: 100%;
     height: 40px;
+
     padding: 0 35px 0 11px;
-    background-color: #fff;
-    border: 1px solid #ddd;
+
+    background-color: var(--white);
+
+    border: 1px solid var(--border);
     border-radius: 6px;
-    color: #292929;
+
+    color: var(--text);
+
     font-family: inherit;
     font-size: 13px;
+
     cursor: pointer;
     outline: none;
 
     appearance: none;
 
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5' fill='none' stroke='%23777' stroke-width='2'/%3E%3C/svg%3E");
+
     background-repeat: no-repeat;
     background-position: right 12px center;
 }
 
 #gradeLevel:focus {
-    border-color: #3269b3;
-    box-shadow: 0 0 0 2px #3269b322;
+    border-color: #8ac9a5;
+    box-shadow: 0 0 0 2px #087a3522;
 }
 
 
@@ -242,7 +299,9 @@ select:focus {
 
 .learner-grid {
     display: grid;
+
     grid-template-columns: repeat(4, 1fr);
+
     gap: 18px 14px;
 }
 
@@ -267,6 +326,7 @@ select:focus {
     display: flex;
     align-items: center;
     gap: 18px;
+
     min-height: 40px;
 }
 
@@ -276,15 +336,18 @@ select:focus {
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #292929;
+
+    color: var(--text);
+
     font-size: 13px;
     font-weight: 400;
+
     cursor: pointer;
 }
 
 input[type="radio"],
 input[type="checkbox"] {
-    accent-color: #3269b3;
+    accent-color: var(--green);
     cursor: pointer;
 }
 
@@ -295,13 +358,16 @@ input[type="checkbox"] {
 
 .sub-label {
     margin: 18px 0 12px;
-    color: #777;
+
+    color: var(--muted);
     font-size: 12px;
 }
 
 .disability-grid {
     display: grid;
+
     grid-template-columns: repeat(4, 1fr);
+
     gap: 10px 16px;
 }
 
@@ -309,9 +375,13 @@ input[type="checkbox"] {
     display: flex;
     align-items: center;
     gap: 7px;
+
     min-height: 30px;
-    color: #292929;
+
+    color: var(--text);
+
     font-size: 12px;
+
     cursor: pointer;
 }
 
@@ -328,7 +398,9 @@ input[type="checkbox"] {
 .address-grid,
 .perm-address-grid {
     display: grid;
+
     grid-template-columns: repeat(4, 1fr);
+
     gap: 12px;
 }
 
@@ -361,6 +433,7 @@ input[type="checkbox"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     gap: 20px;
     margin-bottom: 15px;
 }
@@ -373,7 +446,8 @@ input[type="checkbox"] {
     display: flex;
     align-items: center;
     gap: 14px;
-    color: #777;
+
+    color: var(--muted);
     font-size: 12px;
 }
 
@@ -397,9 +471,12 @@ input[type="checkbox"] {
 
 .parent-row {
     display: grid;
+
     grid-template-columns: 180px 1fr 1fr 1fr 1fr;
+
     gap: 12px;
     align-items: end;
+
     margin-bottom: 15px;
 }
 
@@ -409,7 +486,9 @@ input[type="checkbox"] {
 
 .parent-row h3 {
     margin: 0;
+
     align-self: center;
+
     font-size: 12px;
 }
 
@@ -421,8 +500,11 @@ input[type="checkbox"] {
 input:disabled,
 select:disabled {
     background-color: #f2f2f2;
+
     color: #999;
-    border-color: #ddd;
+
+    border-color: var(--border);
+
     cursor: not-allowed;
 }
 
@@ -433,26 +515,31 @@ select:disabled {
 
 .submit-btn {
     display: block;
+
     width: 150px;
     height: 40px;
+
     margin: 25px 0 0 auto;
 
     border: none;
     border-radius: 6px;
 
-    background-color: #3269b3;
-    color: #fff;
+    background-color: var(--green);
+    color: var(--white);
 
     font-family: inherit;
     font-size: 13px;
     font-weight: 600;
 
     cursor: pointer;
-    transition: background-color 0.15s ease, opacity 0.15s ease;
+
+    transition:
+        background-color 0.15s ease,
+        opacity 0.15s ease;
 }
 
 .submit-btn:hover {
-    background-color: #285a9c;
+    background-color: var(--green-dark);
 }
 
 .submit-btn:active {
@@ -472,6 +559,158 @@ select:disabled {
 .required {
     color: #a83b32;
 }
+
+/* ================================
+   VALIDATION
+================================ */
+
+.field-error {
+    display: block;
+    margin-top: 5px;
+    color: #c93636;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+
+/* Invalid text/select fields */
+
+input.invalid,
+select.invalid {
+    border-color: #c93636 !important;
+    background-color: #fff8f8;
+    box-shadow: 0 0 0 2px #c9363620;
+}
+
+input.invalid:focus,
+select.invalid:focus {
+    border-color: #c93636 !important;
+    box-shadow: 0 0 0 2px #c9363620;
+}
+
+
+/* Invalid radio/checkbox groups */
+
+.invalid-group {
+    border-color: #c93636;
+}
+
+
+/* Section-level validation */
+
+.section.invalid-group {
+    border-color: #c93636;
+    background-color: #fffafa;
+}
+
+
+/* Radio group error */
+
+.inline-options.invalid-group,
+.check-row.invalid-group,
+.same-address.invalid-group {
+    border-radius: 6px;
+}
+
+
+/* Error message inside radio groups */
+
+.inline-options > .field-error,
+.check-row > .field-error,
+.same-address > .field-error {
+    flex-basis: 100%;
+}
+
+
+/* Disabled inputs should not look invalid */
+
+input:disabled.invalid,
+select:disabled.invalid {
+    border-color: var(--border) !important;
+    background-color: #f2f2f2;
+    box-shadow: none;
+}
+
+
+/* Valid focus */
+
+input:not(.invalid):focus,
+select:not(.invalid):focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 2px #087a3522;
+}
+
+
+/* Required indicator */
+
+.field label::after {
+    content: "";
+}
+
+
+/* Submit while validating */
+
+.submit-btn:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+/* GWA */
+
+#previousGwa {
+    width: 100%;
+    height: 40px;
+
+    padding: 0 11px;
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    background-color: var(--white);
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+#previousGwa:focus {
+    border-color: #8ac9a5;
+    box-shadow: 0 0 0 2px #087a3522;
+}
+
+#previousGwa::placeholder {
+    color: #999;
+}
+
+.lock-screen {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.lock-screen[hidden] { display: none; }
+.lock-screen form { display: grid; gap: 12px; width: min(360px, 90vw); text-align: center; }
+
+
+/* Mobile error text */
+
+@media (max-width: 600px) {
+
+    .field-error {
+        font-size: 10px;
+    }
+
+}
+
 
 
 /* ================================

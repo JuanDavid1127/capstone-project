@@ -17,9 +17,6 @@ schoolDb.exec(`
             returnee INTEGER NOT NULL,
             birth_place TEXT NOT NULL,
             birth_date TEXT,
-            religion TEXT,
-            learning_modality TEXT,
-            remarks TEXT,
             mother_tongue TEXT NOT NULL,
             ip_community INTEGER NOT NULL,
             four_ps INTEGER NOT NULL,
@@ -105,15 +102,43 @@ schoolDb.exec(`
         )
         VALUES (
             1,
-            'School name',
-            'SCHOOL-ID-HERE',
-            'Region',
-            'Division',
-            'School head',
-            'Address',
-            'Email',
-            'Contact Number'
+            'Sample school name',
+            'Sample School ID',
+            'Sample Region',
+            'Sample Division',
+            'Sample School head',
+            'Sample Address',
+            'Sample Email',
+            'Sample Contact Number'
         )
     `)
+
+schoolDb.exec(`
+    CREATE TABLE IF NOT EXISTS activity_log(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        actor_id INTEGER,
+        actor_name TEXT,
+        action TEXT NOT NULL,
+        entity_type TEXT,
+        entity_id INTEGER,
+        details TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )
+`);
+schoolDb.exec(`CREATE INDEX IF NOT EXISTS idx_log_actor ON activity_log(actor_id)`);
+schoolDb.exec(`CREATE INDEX IF NOT EXISTS idx_log_action ON activity_log(action)`);
+schoolDb.exec(`CREATE INDEX IF NOT EXISTS idx_log_created ON activity_log(created_at)`);
+schoolDb.exec(`CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT NOT NULL)`);
+schoolDb.exec(`INSERT OR IGNORE INTO settings(key, value) VALUES ('invite_version', '1')`);
+
+
+function addColumnIfMissing(table, column, definition) {
+    const columns = schoolDb.prepare(`PRAGMA table_info(${table})`).all();
+    if (!columns.some(columns => columns.name === column)) {
+        schoolDb.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+    }
+}
+
+addColumnIfMissing('advisers', 'status', `TEXT NOT NULL DEFAULT 'active'`);
 
 module.exports = schoolDb;

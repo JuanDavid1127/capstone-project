@@ -1,5 +1,24 @@
 /* Global style */
 
+:root {
+    --green: #087a35;
+    --green-dark: #06662d;
+    --green-light: #eaf6ee;
+    --green-soft: #f3faf5;
+
+    --yellow: #d8b800;
+    --yellow-light: #fff9d9;
+
+    --background: #f5f5f5;
+    --white: #fff;
+
+    --text: #292929;
+    --muted: #777;
+    --border: #ddd;
+
+    --shadow: 0 2px 5px #0002;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -8,8 +27,8 @@
 
 body {
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: #f5f5f5;
-    color: #292929;
+    background: var(--background);
+    color: var(--text);
 }
 
 .wrapper {
@@ -22,8 +41,8 @@ body {
 
 header {
     height: 90px;
-    background: #fff;
-    border-bottom: 1px solid #ddd;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
 }
 
 .header {
@@ -105,15 +124,20 @@ header {
 
     padding: 0 16px;
 
-    background: #fff;
+    background: var(--white);
 
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 24px;
 
-    box-shadow: 0 2px 5px #0002;
+    box-shadow: var(--shadow);
 
     font-size: 27px;
     color: #777;
+}
+
+.search:focus-within {
+    border-color: #8ac9a5;
+    box-shadow: 0 0 0 3px var(--green-light);
 }
 
 .search input {
@@ -129,12 +153,12 @@ header {
 /* Student Count */
 
 .toolbar div {
-    color: #777;
+    color: var(--muted);
     font-size: 14px;
 }
 
 .toolbar b {
-    color: #333;
+    color: var(--text);
     margin-right: 15px;
 }
 
@@ -169,7 +193,7 @@ header {
 .heading p {
     margin-top: 4px;
 
-    color: #777;
+    color: var(--muted);
     font-size: 13px;
 }
 
@@ -179,18 +203,18 @@ header {
 .heading span {
     padding: 6px 10px;
 
-    background: #e9f1ff;
+    background: var(--green-light);
 
     border-radius: 14px;
 
-    color: #3269b3;
+    color: var(--green);
     font-size: 10px;
     font-weight: 700;
 }
 
 .heading .green {
-    background: #eaf7ed;
-    color: #087b24;
+    background: var(--green-light);
+    color: var(--green);
 }
 
 
@@ -201,12 +225,12 @@ header {
 
     overflow: auto;
 
-    background: #fff;
+    background: var(--white);
 
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 18px;
 
-    box-shadow: 0 2px 5px #0002;
+    box-shadow: var(--shadow);
 }
 
 table {
@@ -239,14 +263,24 @@ th {
     position: sticky;
     top: 0;
 
-    background: #fff;
+    background: var(--white);
 
-    color: #777;
+    color: var(--muted);
     font-size: 11px;
     font-weight: 500;
 
     z-index: 1;
 }
+
+th[data-sort]{
+     cursor: pointer; user-select: none; 
+    }
+th[data-direction="asc"]::after {
+     content: " ▲"; 
+    }
+th[data-direction="desc"]::after {
+     content: " ▼"; 
+    }
 
 
 /* Table Data */
@@ -255,9 +289,15 @@ td {
     font-size: 12px;
 }
 
+tbody tr:hover {
+    background: var(--green-soft);
+}
+
 
 /* Action Columns */
 
+th:nth-child(5),
+td:nth-child(5),
 th:nth-last-child(1),
 td:nth-last-child(1),
 th:nth-last-child(2),
@@ -279,7 +319,7 @@ td:nth-last-child(2) {
     border: 0;
     border-radius: 5px;
 
-    color: #fff;
+    color: var(--white);
 
     font-size: 11px;
     font-weight: 700;
@@ -288,7 +328,7 @@ td:nth-last-child(2) {
 }
 
 .assign {
-    background: #3269b3;
+    background: var(--green);
 }
 
 .remove {
@@ -296,7 +336,7 @@ td:nth-last-child(2) {
 }
 
 .view-profile {
-    background: #3269b3;
+    background: var(--green);
 }
 
 
@@ -328,7 +368,7 @@ td:nth-last-child(2) {
 }
 
 .footer p {
-    color: #777;
+    color: var(--muted);
     font-size: 13px;
 }
 
@@ -338,12 +378,18 @@ td:nth-last-child(2) {
     border: 0;
     border-radius: 6px;
 
-    background: #087b24;
+    background: var(--green);
 
-    color: #fff;
+    color: var(--white);
 
     font-size: 12px;
     font-weight: 700;
+
+    cursor: pointer;
+}
+
+.footer button:hover {
+    background: var(--green-dark);
 }
 
 
@@ -380,7 +426,7 @@ td:nth-last-child(2) {
 
     padding: 24px;
 
-    background: #f5f5f5;
+    background: var(--background);
 
     border-radius: 18px;
 
@@ -405,7 +451,7 @@ td:nth-last-child(2) {
 .modal-header p {
     margin-top: 4px;
 
-    color: #777;
+    color: var(--muted);
     font-size: 13px;
 }
 
@@ -417,7 +463,7 @@ td:nth-last-child(2) {
     border: 0;
     border-radius: 50%;
 
-    background: #fff;
+    background: var(--white);
 
     color: #555;
 
@@ -445,12 +491,12 @@ td:nth-last-child(2) {
 .student-modal .profile-section {
     padding: 20px;
 
-    background: #fff;
+    background: var(--white);
 
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 18px;
 
-    box-shadow: 0 2px 5px #0002;
+    box-shadow: var(--shadow);
 }
 
 
@@ -474,11 +520,11 @@ td:nth-last-child(2) {
 }
 
 .student-modal .profile-info .label {
-    color: #777;
+    color: var(--muted);
 }
 
 .student-modal .profile-info .value {
-    color: #292929;
+    color: var(--text);
     font-weight: 600;
 }
 
@@ -513,7 +559,7 @@ td:nth-last-child(2) {
 }
 
 .guardian .label {
-    color: #777;
+    color: var(--muted);
 }
 
 .guardian .value {
@@ -534,11 +580,11 @@ td:nth-last-child(2) {
 .disability {
     padding: 6px 10px;
 
-    background: #e9f1ff;
+    background: var(--green-light);
 
     border-radius: 14px;
 
-    color: #3269b3;
+    color: var(--green);
 
     font-size: 11px;
     font-weight: 600;
@@ -547,6 +593,37 @@ td:nth-last-child(2) {
 .empty {
     color: #888;
     font-size: 12px;
+}
+
+.download-form {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 90px;
+    padding: 7px 12px;
+    border: 1px solid var(--green);
+    border-radius: 6px;
+    background: var(--green-light);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .15s ease;
+}
+
+.download-form img {
+    width: 15px;
+    height: 15px;
+}
+
+.download-form:hover {
+    background: var(--green);
+    color: #fff;
+}
+
+.download-form:active {
+    transform: scale(.97);
 }
 
 

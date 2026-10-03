@@ -1,35 +1,69 @@
-/* ========================================
-   WHOLE PAGE
-======================================== */
+/* Global */
+
+:root {
+    --green: #087a35;
+    --green-dark: #06662d;
+    --green-light: #eaf6ee;
+
+    --background: #f5f5f5;
+    --white: #fff;
+
+    --text: #292929;
+    --muted: #777;
+    --border: #ddd;
+
+    --shadow: 0 2px 5px #0002;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text);
+}
+
+
+/* Page */
 
 .wrapper {
     min-height: 100vh;
+
     display: grid;
     grid-template-columns: 1fr 1fr;
 
-    /* KEEP YOUR ORIGINAL BACKGROUND */
     background: url(../src/img/tite.avif) center / cover no-repeat;
 }
 
 
-/* ========================================
-   LEFT SECTION
-======================================== */
+/* Left */
 
 .left-container {
     min-width: 0;
 
-    /* Dashboard-style neutral overlay */
-    background-color: rgba(100, 245, 100, 0.3);
+    display: flex;
+    flex-direction: column;
+
+    background: rgba(255, 255, 255, .72);
+
+    backdrop-filter: blur(4px);
 }
 
 .title-container {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
-    padding: 30px;
-    gap: 25px;
+    padding: 35px;
+
+    gap: 20px;
+}
+
+.logo img {
+    width: 70px;
 }
 
 .title-text {
@@ -40,17 +74,43 @@
 }
 
 .main-text {
-    width: min(550px, 100%);
+    width: min(500px, 100%);
 }
 
 .sub-text {
-    width: min(250px, 100%);
+    width: min(230px, 100%);
 }
 
 
-/* ========================================
-   RIGHT SECTION
-======================================== */
+/* Left Message */
+
+.welcome-text {
+    max-width: 600px;
+
+    margin: auto;
+    padding: 40px;
+
+    text-align: center;
+}
+
+.welcome-text h1 {
+    font-size: clamp(28px, 3vw, 42px);
+    color: var(--green);
+}
+
+.welcome-text p {
+    max-width: 500px;
+
+    margin: 12px auto 0;
+
+    color: var(--muted);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* Right */
 
 .right-container {
     min-width: 0;
@@ -59,70 +119,64 @@
     align-items: center;
     justify-content: center;
 
+    padding: 40px;
+
+    background: rgba(245, 245, 245, .82);
+
     backdrop-filter: blur(10px);
-
-    /* Dashboard white */
-    background-color: rgba(255, 255, 255, 0.5);
-
-    padding: 30px;
 }
 
 
-/* ========================================
-   LOGIN FORM
-======================================== */
+/* Form */
 
 .form {
-    width: min(500px, 100%);
+    width: min(450px, 100%);
+
+    padding: 45px 40px;
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
 
-    background-color: #fff;
+    background: var(--white);
 
-    padding: 80px 60px;
-
-    /* Dashboard border */
-    border: 1px solid #ddd;
-
-    /* Dashboard card radius */
+    border: 1px solid var(--border);
     border-radius: 18px;
 
-    /* Dashboard-style shadow */
-    box-shadow: 0 2px 5px #0002;
-
-    gap: 50px;
+    box-shadow: var(--shadow);
 }
 
 
-/* ========================================
-   WELCOME
-======================================== */
+/* Form Heading */
+
+.form-heading {
+    margin-bottom: 32px;
+
+    text-align: center;
+}
 
 .welcome {
-    margin: 0;
-
-    font-size: clamp(30px, 3vw, 40px);
+    font-size: 30px;
     font-weight: 600;
+}
 
-    color: #292929;
+.form-heading p {
+    margin-top: 5px;
+
+    color: var(--muted);
+
+    font-size: 13px;
 }
 
 
-/* ========================================
-   INPUT SECTION
-======================================== */
+/* Inputs */
 
 .input-card {
     width: 100%;
 
     display: flex;
     flex-direction: column;
-    align-items: center;
 
-    gap: 20px;
+    gap: 18px;
 }
 
 .input-container {
@@ -131,143 +185,122 @@
     display: flex;
     flex-direction: column;
 
-    gap: 10px;
+    gap: 7px;
 }
 
-.input-container > label {
-    font-size: 18px;
+.input-container label {
+    color: #555;
+
+    font-size: 13px;
     font-weight: 600;
-
-    color: #292929;
 }
 
-.input-container > input {
+.input-container input {
     width: 100%;
-
-    font-size: 18px;
-    padding: 8px;
-
     height: 42px;
 
-    /* Dashboard border */
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    padding: 0 12px;
 
-    background-color: #fff;
-    color: #292929;
+    border: 1px solid var(--border);
+    border-radius: 6px;
 
     outline: none;
 
+    background: var(--white);
+    color: var(--text);
+
+    font-size: 14px;
+
     transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
+        border-color .15s ease,
+        box-shadow .15s ease;
 }
 
-.input-container > input::placeholder {
+.input-container input::placeholder {
     color: #999;
 }
 
-.input-container > input:focus {
-    border-color: #3269b3;
-    box-shadow: 0 0 0 2px #3269b322;
+.input-container input:focus {
+    border-color: #8ac9a5;
+    box-shadow: 0 0 0 2px #087a3522;
 }
 
 
-/* ========================================
-   FORGOT PASSWORD
-======================================== */
+/* Forgot Password */
 
 .password-container {
     display: flex;
-    align-self: flex-end;
+    justify-content: flex-end;
+
+    margin-top: -5px;
 }
 
 .password-container a {
+    color: var(--muted);
+
+    font-size: 12px;
     text-decoration: none;
-
-    color: #777;
-
-    font-size: 15px;
-
-    transition: color 0.15s ease;
 }
 
 .password-container a:hover {
-    color: #3269b3;
-}
-
-.password-container a:active {
-    color: #285a9c;
+    color: var(--green);
 }
 
 
-/* ========================================
-   LOGIN BUTTON
-======================================== */
+/* Login Button */
 
 .submitBtn {
+    width: 100%;
+    min-height: 42px;
+
+    margin-top: 5px;
     padding: 8px 20px;
 
-    min-width: 100px;
-    min-height: 40px;
-
-    font-size: 15px;
-    font-weight: 600;
-
+    border: 0;
     border-radius: 6px;
 
-    /* Dashboard primary blue */
-    background-color: #3269b3;
-    color: #fff;
+    background: var(--green);
+    color: var(--white);
 
-    border: 1px solid #3269b3;
+    font-size: 13px;
+    font-weight: 700;
 
     cursor: pointer;
 
     transition:
-        background-color 0.15s ease,
-        transform 0.1s ease;
+        background-color .15s ease,
+        transform .1s ease;
 }
 
 .submitBtn:hover {
-    background-color: #285a9c;
-    transform: scale(1.03);
+    background: var(--green-dark);
 }
 
 .submitBtn:active {
-    background-color: #285a9c;
-    transform: scale(0.97);
+    transform: scale(.98);
 }
 
 .submitBtn:disabled {
-    background-color: #aaa;
-    border-color: #aaa;
+    background: #aaa;
     cursor: not-allowed;
-    transform: none;
 }
 
 
-/* ========================================
-   LOADING
-======================================== */
+/* Loading */
 
 #loading {
     display: none;
 }
 
 
-/* ========================================
-   MOBILE LOGO
-======================================== */
+/* Mobile Logo */
 
 .mobile-logo {
     display: none;
 }
 
 
-/* ========================================
-   RESPONSIVE
-======================================== */
+/* Responsive */
 
 @media (max-width: 1000px) {
 
@@ -280,9 +313,9 @@
     }
 
     .right-container {
-        flex-direction: column;
-
         min-height: 100vh;
+
+        flex-direction: column;
 
         padding: 30px 20px;
     }
@@ -292,9 +325,11 @@
         flex-direction: column;
         align-items: center;
 
-        gap: 5px;
+        margin-bottom: 25px;
+    }
 
-        margin-bottom: 30px;
+    .mobile-logo .logo img {
+        width: 60px;
     }
 
     .mobile-logo .main-text {
@@ -306,14 +341,10 @@
     }
 
     .form {
-        padding: 60px 30px;
+        padding: 40px 30px;
     }
 }
 
-
-/* ========================================
-   SMALL MOBILE
-======================================== */
 
 @media (max-width: 500px) {
 
@@ -330,24 +361,20 @@
     }
 
     .form {
-        padding: 45px 22px;
+        padding: 35px 22px;
+
         border-radius: 14px;
-        gap: 35px;
     }
 
     .welcome {
-        font-size: 30px;
+        font-size: 27px;
     }
 
-    .input-container > label {
-        font-size: 15px;
+    .input-container label {
+        font-size: 12px;
     }
 
-    .input-container > input {
-        font-size: 16px;
-    }
-
-    .password-container a {
+    .input-container input {
         font-size: 13px;
     }
 }

@@ -1,0 +1,430 @@
+:root {
+    --green: #087a35;
+    --green-dark: #06662d;
+    --green-light: #eaf6ee;
+    --green-soft: #f3faf5;
+
+    --yellow: #d8b800;
+    --yellow-light: #fff9d9;
+
+    --background: #f5f5f5;
+    --white: #fff;
+
+    --text: #292929;
+    --muted: #777;
+    --border: #ddd;
+
+    --red: #c93636;
+    --red-light: #fff0f0;
+
+    --shadow: 0 2px 5px #0002;
+}
+
+
+/* Global */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text);
+    background: var(--background);
+}
+
+
+/* Page */
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+
+/* Card */
+
+.signup-card {
+    width: min(850px, 100%);
+    padding: 40px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+}
+
+
+/* School Header */
+
+.school-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.school-header .logo img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+}
+
+.school-name {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.school-name strong {
+    color: var(--green);
+    font-size: 18px;
+}
+
+.school-name span {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+
+/* Heading */
+
+.heading {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.badge {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 5px 9px;
+    border-radius: 5px;
+    background: var(--green-light);
+    color: var(--green);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+
+.heading h1 {
+    font-size: 28px;
+    font-weight: 650;
+}
+
+.heading p {
+    max-width: 520px;
+    margin: 8px auto 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* Invite Status */
+
+.invite-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding: 13px 15px;
+    border: 1px solid #cce7d5;
+    border-radius: 8px;
+    background: var(--green-soft);
+}
+
+.status-icon {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.invite-status strong {
+    display: block;
+    color: var(--green-dark);
+    font-size: 13px;
+}
+
+.invite-status p {
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+
+/* Invalid Invite */
+
+.invite-status.invalid {
+    border-color: #efcccc;
+    background: var(--red-light);
+}
+
+.invite-status.invalid .status-icon {
+    background: var(--red);
+}
+
+.invite-status.invalid strong {
+    color: var(--red);
+}
+
+
+/* Sections */
+
+.section {
+    padding: 24px 0;
+    border-top: 1px solid #eee;
+}
+
+.section:first-of-type {
+    border-top: 0;
+}
+
+.section-heading {
+    margin-bottom: 18px;
+}
+
+.section-heading h2 {
+    font-size: 17px;
+    font-weight: 650;
+}
+
+.section-heading p {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+
+/* Fields */
+
+.fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 17px;
+}
+
+.name-fields {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.field label {
+    color: #555;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.field label span {
+    color: var(--red);
+}
+
+.field input {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    outline: none;
+    background: var(--white);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.field input::placeholder {
+    color: #999;
+}
+
+.field input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 2px #087a3522;
+}
+
+.field input:invalid:not(:placeholder-shown) {
+    border-color: var(--red);
+}
+
+
+/* Notice */
+
+.notice {
+    margin-top: 5px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--yellow);
+    background: var(--yellow-light);
+}
+
+.notice strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #665800;
+    font-size: 12px;
+}
+
+.notice p {
+    color: #777;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* Actions */
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 22px;
+    border-top: 1px solid #eee;
+}
+
+.cancel {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: #555;
+    background: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: .15s ease;
+}
+
+.cancel:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+}
+
+.submit-btn {
+    min-width: 135px;
+    padding: 10px 18px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--green);
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color .15s ease, transform .1s ease;
+}
+
+.submit-btn:hover {
+    background: var(--green-dark);
+}
+
+.submit-btn:active {
+    transform: scale(.98);
+}
+
+.submit-btn:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* Footer */
+
+.footer-text {
+    margin-top: 25px;
+    color: #999;
+    text-align: center;
+    font-size: 10px;
+}
+
+
+/* Loading */
+
+#loading {
+    display: none;
+}
+
+
+/* Responsive */
+
+@media (max-width: 700px) {
+
+    .page {
+        padding: 20px 12px;
+        align-items: flex-start;
+    }
+
+    .signup-card {
+        padding: 30px 25px;
+        border-radius: 14px;
+    }
+
+    .name-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .school-header {
+        margin-bottom: 28px;
+    }
+
+    .heading h1 {
+        font-size: 25px;
+    }
+}
+
+
+@media (max-width: 450px) {
+
+    .page {
+        padding: 12px 8px;
+    }
+
+    .signup-card {
+        padding: 25px 18px;
+    }
+
+    .school-header {
+        gap: 10px;
+    }
+
+    .school-header .logo img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .school-name strong {
+        font-size: 15px;
+    }
+
+    .heading h1 {
+        font-size: 22px;
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .cancel,
+    .submit-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

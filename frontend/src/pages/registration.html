@@ -17,7 +17,7 @@
             <!School Header>
             <header class="school-header">
                 <div class="school-logo">
-                    <img src="school-logo.png" alt="School Logo">
+                    <img src="../img/Group 2.png" alt="School Logo">
                 </div>
 
                 <div>
@@ -67,43 +67,39 @@
             <h2>Learner's Information</h2>
             
             <section class="section learner-grid">
+
                 <div class="field span-2">
-                    <label for="lrn">Learner's Reference Number (LRN):</label>
+                    <label for="lrn">Learner's Reference Number (LRN): <span class="required">*</span></label>
                     <input id="lrn" name="lrn" type="tel" placeholder="000000000000" maxlength="12" required>
                 </div>
 
-                <div class="field">
-                    <label for="birthPlace">Place of Birth:</label>
-                    <input id="birthPlace" name="birthPlace" type="text" placeholder="Municipality/City">
+                <div class="field span-2">
+                    <label for="previousGwa">Previous School Year GWA: <span class="required">*</span></label>
+                    <input id="previousGwa" name="previousGwa" type="number" min="75" max="100" step="0.01" placeholder="e.g. 92.50" required>
                 </div>
 
                 <div class="field">
-                    <label for="motherTongue">Mother Tongue:</label>
-                    <input id="motherTongue" name="motherTongue" type="text" placeholder="Mother Tongue">
-                </div>
-
-                <div class="field">
-                    <label for="lastName">Last Name:</label>
-                    <input id="lastName" name="lastName" type="text" placeholder="Last Name">
+                    <label for="lastName">Last Name: <span class="required">*</span></label>
+                    <input id="lastName" name="lastName" type="text" placeholder="Last Name" required>
                 </div>
                  
                 <div class="field">
-                    <label for="firstName">First Name:</label>
-                    <input id="firstName" name="firstName" type="text" placeholder="First Name">
+                    <label for="firstName">First Name: <span class="required">*</span></label>
+                    <input id="firstName" name="firstName" type="text" placeholder="First Name" required>
                 </div>
 
                 <div class="field">
-                    <label for="middleName">Middle Name:</label>
-                    <input id="middleName" name="middleName" type="text" placeholder="Middle Name">
+                    <label for="middleName">Middle Name: <span class="required">*</span></label>
+                    <input id="middleName" name="middleName" type="text" placeholder="Middle Name" required>
                 </div>
 
                 <div class="field">
-                    <label for="extension">Extension Name:</label>
-                    <input id="extension" name="extension" type="text" placeholder="Jr., III">
+                    <label for="extension">Extension Name: <span class="required">*</span></label>
+                    <input id="extension" name="extension" type="text" placeholder="Jr., III" required>
                 </div>
 
-                <div class="field span-3">
-                    <label>Sex:</label>
+                <div class="field span-4">
+                    <label>Sex: <span class="required">*</span></label>
                     <div class="inline-options">
                         <label>
                             <input type="radio" name="sex" value="male" required> Male
@@ -114,8 +110,18 @@
                     </div>
                 </div>
 
+                <div class="field">
+                    <label for="birthPlace">Place of Birth: <span class="required">*</span></label>
+                    <input id="birthPlace" name="birthPlace" type="text" placeholder="Municipality/City" required>
+                </div>
+
+                <div class="field">
+                    <label for="motherTongue">Mother Tongue: <span class="required">*</span></label>
+                    <input id="motherTongue" name="motherTongue" type="text" placeholder="Mother Tongue" required>
+                </div>
+
                 <div class="field span-4">
-                    <label>Belong to any Indigenous People (IP) Community:</label>
+                    <label>Belong to any Indigenous People (IP) Community: <span class="required">*</span></label>
                     <div class="inline-options">
                         <label>
                             <input type="radio" name="ipCommunity" value="yes" required> Yes
@@ -126,9 +132,8 @@
                     </div>
                 </div>
 
-
                 <div class="field span-2">
-                    <label>Is your Family a beneficiary of 4Ps?</label>
+                    <label>Is your Family a beneficiary of 4Ps? <span class="required">*</span></label>
                     <div class="inline-options">
                         <label>
                             <input type="radio" name="fourPs" value="yes" required> Yes
@@ -143,6 +148,7 @@
                     <label for="householdId">If Yes, write the 4Ps Household ID Number:</label>
                     <input id="householdId" name="householdId" type="text">
                 </div>
+
             </section>
 
             <!Disability>
@@ -258,9 +264,24 @@
             </section>
 
             <!Submit>
+            <div class="field consent">
+                <label>
+                    <input type="checkbox" id="consent" name="consent">
+                    I have read and agree to the collection and use of my personal information
+                    for enrollment, in accordance with the Data Privacy Act of 2012 (RA 10173).
+                </label>
+            </div>
             <button class="submit-btn" type="submit">Submit</button>
 
         </form>
     </main>
 </body>
+<div id="lockScreen" class="lock-screen" hidden>
+    <form id="unlockForm">
+        <h2>Registration Desk</h2>
+        <p>Enter the access code provided by the school staff.</p>
+        <input type="password" id="accessCode" autocomplete="off" required>
+        <button type="submit">Unlock</button>
+    </form>
+</div>
 </html>

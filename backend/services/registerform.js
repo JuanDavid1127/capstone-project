@@ -3,37 +3,46 @@ const schoolDb = require("../database");
 
 const PAGE_WIDTH = 612;
 const PAGE_HEIGHT = 792;
-const LEFT = 38; // inner left edge of fields
+const LEFT = 38;
+const FIELD_H = 28; 
+const ROW_GAP = 6; 
+const CHECKBOX_SIZE = 8;
+const OUTER_BORDER_TOP = 114;
 const BLACK = rgb(0, 0, 0);
-const FIELD_H = 28;
 
-// ---------- small helpers ----------
+const LEARNER_ROW_START = 132;
+const LEARNER_ROW_STEP = 32;
+const learnerRowTop = (row) => LEARNER_ROW_START + row * LEARNER_ROW_STEP;
 
-// Convert "distance from top of page" (+ element height) to pdf-lib's bottom-left y.
-const yOf = (top, height = 0) => PAGE_HEIGHT - top - height;
+const DISABILITY_BLOCK_H = 70;
+const DISABILITY_INDENT = 10;
+const DISABILITY_LINE_H = 10;
 
-const upper = (v) => (v == null ? "" : String(v).toUpperCase());
+const pdfY = (top, height = 0) => PAGE_HEIGHT - top - height;
 
-// "a. blind" / "BLIND" / "visual_impairment" -> comparable keys ("blind", "visualimpairment")
+const toUpper = (v) => (v == null ? "" : String(v).toUpperCase());
+
 const normKey = (s) =>
   String(s ?? "")
     .toLowerCase()
     .replace(/^[a-z]\.\s*/, "")
     .replace(/[^a-z0-9]/g, "");
 
-function fitSize(font, text, maxWidth, size, min = 6) {
+function fitFontSize(font, text, maxWidth, size, min = 6) {
   while (size > min && font.widthOfTextAtSize(text, size) > maxWidth) size -= 0.5;
   return size;
 }
 
+const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})/;
+
 function formatBirthDate(v) {
   if (!v) return "";
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v);
+  const m = ISO_DATE.exec(v);
   return m ? `${m[2]}/${m[3]}/${m[1]}` : String(v);
 }
 
 function computeAge(v) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v || "");
+  const m = ISO_DATE.exec(v || "");
   if (!m) return "";
   const birth = new Date(+m[1], +m[2] - 1, +m[3]);
   const now = new Date();
@@ -45,12 +54,10 @@ function computeAge(v) {
   return age;
 }
 
-// ---------- drawing primitives (all use "top" coordinates) ----------
-
 function drawText(ctx, text, x, top, size = 7, isBold = false) {
   ctx.page.drawText(text, {
     x,
-    y: yOf(top) - size,
+    y: pdfY(top) - size,
     size,
     font: isBold ? ctx.bold : ctx.font,
     color: BLACK,
@@ -58,15 +65,15 @@ function drawText(ctx, text, x, top, size = 7, isBold = false) {
 }
 
 function drawCentered(ctx, text, left, width, top, size, isBold = true) {
-  const f = isBold ? ctx.bold : ctx.font;
-  const w = f.widthOfTextAtSize(text, size);
-  drawText(ctx, text, left + (width - w) / 2, top, size, isBold);
+  const font = isBold ? ctx.bold : ctx.font;
+  const textWidth = font.widthOfTextAtSize(text, size);
+  drawText(ctx, text, left + (width - textWidth) / 2, top, size, isBold);
 }
 
 function drawBox(ctx, x, top, width, height) {
   ctx.page.drawRectangle({
     x,
-    y: yOf(top, height),
+    y: pdfY(top, height),
     width,
     height,
     borderWidth: 0.75,
@@ -77,49 +84,48 @@ function drawBox(ctx, x, top, width, height) {
 function drawField(ctx, { x, top, width, height = FIELD_H, label, value, size = 10 }) {
   drawBox(ctx, x, top, width, height);
   drawText(ctx, label, x + 3, top + 3, 6, true);
-  const text = upper(value);
-  if (text) {
-    const s = fitSize(ctx.font, text, width - 10, size);
-    ctx.page.drawText(text, {
-      x: x + 5,
-      y: yOf(top, height) + 5,
-      size: s,
-      font: ctx.font,
-      color: BLACK,
-    });
-  }
+
+  const text = toUpper(value);
+  if (!text) return;
+
+  ctx.page.drawText(text, {
+    x: x + 5,
+    y: pdfY(top, height) + 5,
+    size: fitFontSize(ctx.font, text, width - 10, size),
+    font: ctx.font,
+    color: BLACK,
+  });
 }
 
-// Draws a checkbox + label. Returns the x where the label ends.
 function drawCheckbox(ctx, x, top, label, checked = false, labelSize = 7) {
-  const box = 8;
+  const box = CHECKBOX_SIZE;
   drawBox(ctx, x, top, box, box);
+
   if (checked) {
     ctx.page.drawRectangle({
       x: x + 1.75,
-      y: yOf(top, box) + 1.75,
+      y: pdfY(top, box) + 1.75,
       width: box - 3.5,
       height: box - 3.5,
       color: BLACK,
     });
   }
+
   ctx.page.drawText(label, {
     x: x + box + 3,
-    y: yOf(top, box) + 1.5,
+    y: pdfY(top, box) + 1.5,
     size: labelSize,
     font: ctx.font,
     color: BLACK,
   });
+
   return x + box + 3 + ctx.font.widthOfTextAtSize(label, labelSize);
 }
 
-// value: true -> Yes ticked, false -> No ticked, null/undefined -> neither
 function drawYesNo(ctx, x, top, value) {
   const afterYes = drawCheckbox(ctx, x, top, "Yes", value === true);
   drawCheckbox(ctx, afterYes + 8, top, "No", value === false);
 }
-
-// ---------- sections ----------
 
 function drawHeader(ctx, d) {
   drawText(ctx, "Revised as of 03/27/2023", 498, 20, 6);
@@ -150,130 +156,195 @@ function drawHeader(ctx, d) {
   );
 }
 
+const item = (label) => ({ label, indent: 0 });
+const subItem = (label) => ({ label, indent: 1 });
+
+// Four columns of disability checkboxes; `x` is the column's left edge.
 const DISABILITY_COLUMNS = [
-  { x: 46, items: [["Visual Impairment", 0], ["a. blind", 1], ["b. low vision", 1], ["Multiple Disorder", 0]] },
-  { x: 170, items: [["Hearing Impairment", 0], ["Autism Spectrum Disorder", 0], ["Speech/Language Disorder", 0]] },
-  { x: 300, items: [["Learning Disability", 0], ["Emotional-Behavioral Disorder", 0], ["Cerebral Palsy", 0]] },
+  {
+    x: 46,
+    items: [item("Visual Impairment"), subItem("a. blind"), subItem("b. low vision"), item("Multiple Disorder")],
+  },
+  {
+    x: 170,
+    items: [item("Hearing Impairment"), item("Autism Spectrum Disorder"), item("Speech/Language Disorder")],
+  },
+  {
+    x: 300,
+    items: [item("Learning Disability"), item("Emotional-Behavioral Disorder"), item("Cerebral Palsy")],
+  },
   {
     x: 430,
     items: [
-      ["Intellectual Disability", 0],
-      ["Orthopedic/Physical Handicap", 0],
-      ["Special Health Problem/Chronic Disease", 0],
-      ["a. Cancer", 1],
+      item("Intellectual Disability"),
+      item("Orthopedic/Physical Handicap"),
+      item("Special Health Problem/Chronic Disease"),
+      subItem("a. Cancer"),
     ],
   },
 ];
 
-function drawLearnerInfo(ctx, d) {
-  drawCentered(ctx, "LEARNER INFORMATION", 0, PAGE_WIDTH, 118, 8);
+function drawNameBirthSexRow(ctx, d, top) {
+  drawField(ctx, { x: LEFT, top, width: 250, label: "Last Name", value: d.lastName });
+  drawField(ctx, { x: 296, top, width: 104, label: "Birthdate (mm/dd/yyyy)", value: formatBirthDate(d.birthDate) });
 
-  // r1
-  drawField(ctx, { x: LEFT, top: 132, width: 300, label: "PSA Birth Certificate No. (if available upon registration)", value: d.psaBirthCertNo });
-  drawField(ctx, { x: 346, top: 132, width: 228, label: "Learner Reference No. (LRN)", value: d.lrn });
+  drawBox(ctx, 408, top, 96, FIELD_H);
+  drawText(ctx, "Sex", 411, top + 3, 6, true);
+  drawCheckbox(ctx, 413, top + 14, "Male", toUpper(d.sex) === "MALE");
+  drawCheckbox(ctx, 448, top + 14, "Female", toUpper(d.sex) === "FEMALE");
 
-  // r2
-  drawField(ctx, { x: LEFT, top: 164, width: 250, label: "Last Name", value: d.lastName });
-  drawField(ctx, { x: 296, top: 164, width: 104, label: "Birthdate (mm/dd/yyyy)", value: formatBirthDate(d.birthDate) });
-  drawBox(ctx, 408, 164, 96, FIELD_H);
-  drawText(ctx, "Sex", 411, 167, 6, true);
-  drawCheckbox(ctx, 413, 178, "Male", upper(d.sex) === "MALE");
-  drawCheckbox(ctx, 448, 178, "Female", upper(d.sex) === "FEMALE");
-  drawField(ctx, { x: 512, top: 164, width: 62, label: "Age", value: d.age ?? computeAge(d.birthDate) });
+  drawField(ctx, { x: 512, top, width: 62, label: "Age", value: d.age ?? computeAge(d.birthDate) });
+}
 
-  // r3, r4
-  drawField(ctx, { x: LEFT, top: 196, width: 250, label: "First Name", value: d.firstName });
-  drawField(ctx, { x: 296, top: 196, width: 278, label: "Place of Birth (Municipality/City)", value: d.placeOfBirth });
-  drawField(ctx, { x: LEFT, top: 228, width: 250, label: "Middle Name", value: d.middleName });
-  drawField(ctx, { x: 296, top: 228, width: 278, label: "Mother Tongue", value: d.motherTongue });
+function drawExtensionAndIpRow(ctx, d, top) {
+  drawField(ctx, { x: LEFT, top, width: 120, label: "Extension Name e.g. Jr., III (if applicable)", value: d.extensionName });
 
-  // r5: extension name + IP community
-  drawField(ctx, { x: LEFT, top: 260, width: 120, label: "Extension Name e.g. Jr., III (if applicable)", value: d.extensionName });
-  drawBox(ctx, 166, 260, 408, FIELD_H);
-  drawText(ctx, "Belonging to any Indigenous Peoples (IP) Community/Indigenous Cultural Community", 170, 263, 6, true);
-  drawYesNo(ctx, 172, 275, d.ipCommunity);
-  drawText(ctx, "If Yes, please specify:", 250, 275, 6.5, true);
+  drawBox(ctx, 166, top, 408, FIELD_H);
+  drawText(ctx, "Belonging to any Indigenous Peoples (IP) Community/Indigenous Cultural Community", 170, top + 3, 6, true);
+  drawYesNo(ctx, 172, top + 15, d.ipCommunity);
+  drawText(ctx, "If Yes, please specify:", 250, top + 15, 6.5, true);
+
   if (d.ipSpecify) {
-    const t = upper(d.ipSpecify);
-    drawText(ctx, t, 330, 274, fitSize(ctx.font, t, 240, 8), false);
+    const text = toUpper(d.ipSpecify);
+    drawText(ctx, text, 330, top + 14, fitFontSize(ctx.font, text, 240, 8), false);
   }
+}
 
-  // r6: 4Ps
-  drawBox(ctx, LEFT, 292, 250, FIELD_H);
-  drawText(ctx, "Is your family a beneficiary of 4Ps?", 42, 295, 6.5, true);
-  drawYesNo(ctx, 44, 307, d.fourPs);
-  drawField(ctx, { x: 296, top: 292, width: 278, label: "If Yes, write the 4Ps Household ID Number below", value: d.fourPsId });
+function drawFourPsRow(ctx, d, top) {
+  drawBox(ctx, LEFT, top, 250, FIELD_H);
+  drawText(ctx, "Is your family a beneficiary of 4Ps?", 42, top + 3, 6.5, true);
+  drawYesNo(ctx, 44, top + 15, d.fourPs);
 
-  // r7: disability block
-  const dTop = 324;
-  drawBox(ctx, LEFT, dTop, 536, 70);
-  drawText(ctx, "Is the child a Learner with Disability?", 46, dTop + 4, 7.5, true);
-  drawYesNo(ctx, 196, dTop + 3, d.hasDisability);
-  drawText(ctx, "If Yes, specify the type of disability:", 46, dTop + 17, 6.5, true);
+  drawField(ctx, { x: 296, top, width: 278, label: "If Yes, write the 4Ps Household ID Number below", value: d.fourPsId });
+}
+
+function drawDisabilityBlock(ctx, d, top) {
+  drawBox(ctx, LEFT, top, 536, DISABILITY_BLOCK_H);
+  drawText(ctx, "Is the child a Learner with Disability?", 46, top + 4, 7.5, true);
+  drawYesNo(ctx, 196, top + 3, d.hasDisability);
+  drawText(ctx, "If Yes, specify the type of disability:", 46, top + 17, 6.5, true);
 
   const selected = (d.disabilities || []).map(normKey);
-  DISABILITY_COLUMNS.forEach((col) => {
-    col.items.forEach(([label, indent], i) => {
+
+  DISABILITY_COLUMNS.forEach(({ x, items }) => {
+    items.forEach(({ label, indent }, line) => {
       drawCheckbox(
         ctx,
-        col.x + indent * 10,
-        dTop + 28 + i * 10,
+        x + indent * DISABILITY_INDENT,
+        top + 28 + line * DISABILITY_LINE_H,
         label,
         selected.includes(normKey(label)),
         6.5
       );
     });
   });
+}
 
-  return dTop + 70; // 394
+function drawLearnerInfo(ctx, d) {
+  drawCentered(ctx, "LEARNER INFORMATION", 0, PAGE_WIDTH, 118, 8);
+
+  drawField(ctx, {
+    x: LEFT,
+    top: learnerRowTop(0),
+    width: 300,
+    label: "PSA Birth Certificate No. (if available upon registration)",
+    value: d.psaBirthCertNo,
+  });
+  drawField(ctx, { x: 346, top: learnerRowTop(0), width: 228, label: "Learner Reference No. (LRN)", value: d.lrn });
+
+  drawNameBirthSexRow(ctx, d, learnerRowTop(1));
+
+  drawField(ctx, { x: LEFT, top: learnerRowTop(2), width: 250, label: "First Name", value: d.firstName });
+  drawField(ctx, { x: 296, top: learnerRowTop(2), width: 278, label: "Place of Birth (Municipality/City)", value: d.placeOfBirth });
+
+  drawField(ctx, { x: LEFT, top: learnerRowTop(3), width: 250, label: "Middle Name", value: d.middleName });
+  drawField(ctx, { x: 296, top: learnerRowTop(3), width: 278, label: "Mother Tongue", value: d.motherTongue });
+
+  drawExtensionAndIpRow(ctx, d, learnerRowTop(4));
+  drawFourPsRow(ctx, d, learnerRowTop(5));
+  drawDisabilityBlock(ctx, d, learnerRowTop(6));
+
+  return learnerRowTop(6) + DISABILITY_BLOCK_H;
 }
 
 function drawAddressBlock(ctx, top, a = {}, labels = {}) {
   drawField(ctx, { x: LEFT, top, width: 110, label: labels.house || "House No.", value: a.houseNo });
   drawField(ctx, { x: 156, top, width: 230, label: "Sitio/Street Name", value: a.street });
   drawField(ctx, { x: 394, top, width: 180, label: "Barangay", value: a.barangay });
-  const t2 = top + 32;
-  drawField(ctx, { x: LEFT, top: t2, width: 180, label: "Municipality/City", value: a.city });
-  drawField(ctx, { x: 226, top: t2, width: 160, label: "Province", value: a.province });
-  drawField(ctx, { x: 394, top: t2, width: 110, label: "Country", value: a.country });
-  drawField(ctx, { x: 512, top: t2, width: 62, label: "Zip Code", value: a.zip });
-  return t2 + FIELD_H;
+
+  const secondRow = top + 32;
+  drawField(ctx, { x: LEFT, top: secondRow, width: 180, label: "Municipality/City", value: a.city });
+  drawField(ctx, { x: 226, top: secondRow, width: 160, label: "Province", value: a.province });
+  drawField(ctx, { x: 394, top: secondRow, width: 110, label: "Country", value: a.country });
+  drawField(ctx, { x: 512, top: secondRow, width: 62, label: "Zip Code", value: a.zip });
+
+  return secondRow + FIELD_H;
 }
 
 function drawAddresses(ctx, d, top) {
   drawText(ctx, "Current Address", LEFT, top + 6, 8, true);
-  let end = drawAddressBlock(ctx, top + 16, d.currentAddress);
+  const currentEnd = drawAddressBlock(ctx, top + 16, d.currentAddress);
 
-  const permTop = end + 6;
-  drawText(ctx, "Permanent Address", LEFT, permTop + 6, 8, true);
-  drawText(ctx, "Same with your Current Address?", 150, permTop + 7, 7, true);
-  drawYesNo(ctx, 290, permTop + 6, d.permanentSameAsCurrent);
+  const permanentTop = currentEnd + ROW_GAP;
+  drawText(ctx, "Permanent Address", LEFT, permanentTop + 6, 8, true);
+  drawText(ctx, "Same with your Current Address?", 150, permanentTop + 7, 7, true);
+  drawYesNo(ctx, 290, permanentTop + 6, d.permanentSameAsCurrent);
 
-  const perm = d.permanentSameAsCurrent === true ? d.currentAddress : d.permanentAddress;
-  end = drawAddressBlock(ctx, permTop + 16, perm, { house: "House No./Street" });
-  return end;
+  const permanent = d.permanentSameAsCurrent === true ? d.currentAddress : d.permanentAddress;
+  return drawAddressBlock(ctx, permanentTop + 16, permanent, { house: "House No./Street" });
 }
 
-function drawGuardianRow(ctx, top, title, p = {}) {
+function drawGuardianRow(ctx, top, title, person = {}) {
   drawText(ctx, title, LEFT, top, 7, true);
-  const t = top + 9;
-  drawField(ctx, { x: LEFT, top: t, width: 150, label: "Last Name", value: p.lastName });
-  drawField(ctx, { x: 196, top: t, width: 150, label: "First Name", value: p.firstName });
-  drawField(ctx, { x: 354, top: t, width: 120, label: "Middle Name", value: p.middleName });
-  drawField(ctx, { x: 482, top: t, width: 92, label: "Contact Number", value: p.contact, size: 9 });
-  return t + FIELD_H;
+
+  const rowTop = top + 9;
+  drawField(ctx, { x: LEFT, top: rowTop, width: 150, label: "Last Name", value: person.lastName });
+  drawField(ctx, { x: 196, top: rowTop, width: 150, label: "First Name", value: person.firstName });
+  drawField(ctx, { x: 354, top: rowTop, width: 120, label: "Middle Name", value: person.middleName });
+  drawField(ctx, { x: 482, top: rowTop, width: 92, label: "Contact Number", value: person.contact, size: 9 });
+
+  return rowTop + FIELD_H;
 }
 
 function drawGuardians(ctx, d, top) {
   drawCentered(ctx, "PARENT'S/GUARDIAN'S INFORMATION", 0, PAGE_WIDTH, top + 8, 8);
+
   let y = top + 22;
   y = drawGuardianRow(ctx, y, "Father's Name", d.father);
-  y = drawGuardianRow(ctx, y + 6, "Mother's Maiden Name", d.mother);
-  y = drawGuardianRow(ctx, y + 6, "Legal Guardian's Name", d.guardian);
+  y = drawGuardianRow(ctx, y + ROW_GAP, "Mother's Maiden Name", d.mother);
+  y = drawGuardianRow(ctx, y + ROW_GAP, "Legal Guardian's Name", d.guardian);
   return y;
 }
 
-// ---------- data: DB rows -> form data ----------
+function drawOuterBorder(ctx, bottom) {
+  const height = bottom - OUTER_BORDER_TOP;
+  ctx.page.drawRectangle({
+    x: 30,
+    y: pdfY(OUTER_BORDER_TOP, height),
+    width: 552,
+    height,
+    borderWidth: 1,
+    borderColor: BLACK,
+  });
+}
+
+async function renderRegistrationForm(data = {}) {
+  const pdf = await PDFDocument.create();
+  const page = pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+  const ctx = {
+    page,
+    font: await pdf.embedFont(StandardFonts.Helvetica),
+    bold: await pdf.embedFont(StandardFonts.HelveticaBold),
+  };
+
+  drawHeader(ctx, data);
+  let top = drawLearnerInfo(ctx, data);
+  top = drawAddresses(ctx, data, top);
+  top = drawGuardians(ctx, data, top + ROW_GAP);
+  drawOuterBorder(ctx, top + ROW_GAP);
+
+  return Buffer.from(await pdf.save());
+}
 
 const studentStmt = schoolDb.prepare(`
     SELECT
@@ -332,7 +403,7 @@ const disabilitiesStmt = schoolDb.prepare(`
     WHERE student_id = ?
 `);
 
-// 1/"1"/"yes"/"true" -> true, 0/"0"/"no"/"false" -> false, empty -> null (both boxes blank)
+
 function toBool(v) {
   if (v === null || v === undefined || v === "") return null;
   const s = String(v).trim().toLowerCase();
@@ -341,7 +412,6 @@ function toBool(v) {
   return null;
 }
 
-// "G8" / "8" / "Grade 10" -> "08" / "08" / "10"
 function formatGradeLevel(v) {
   const digits = String(v ?? "").replace(/\D/g, "");
   return digits ? digits.padStart(2, "0") : "";
@@ -360,10 +430,11 @@ function mapAddress(a) {
   };
 }
 
+const ADDRESS_KEYS = ["houseNo", "street", "barangay", "city", "province", "country", "zip"];
+
 function sameAddress(a, b) {
-  const keys = ["houseNo", "street", "barangay", "city", "province", "country", "zip"];
   const norm = (v) => String(v ?? "").trim().toUpperCase();
-  return keys.every((k) => norm(a[k]) === norm(b[k]));
+  return ADDRESS_KEYS.every((key) => norm(a[key]) === norm(b[key]));
 }
 
 function mapGuardian(g) {
@@ -376,24 +447,13 @@ function mapGuardian(g) {
   };
 }
 
-// Finds the first guardian row whose relationship text contains the keyword
-// ("father", "mother", "guardian"), case-insensitive.
 function pickGuardian(guardians, keyword) {
   return guardians.find((g) => String(g.relationship || "").toLowerCase().includes(keyword));
 }
 
-// Pure function: DB rows in, the object the drawing code expects out.
-// This is the only place DB column names get translated into form field names.
+
 function buildFormData(row, permanentRow, guardians = [], disabilityRows = []) {
-  const current = mapAddress({
-    house_no: row.house_no,
-    street: row.street,
-    barangay: row.barangay,
-    city: row.city,
-    province: row.province,
-    country: row.country,
-    zipcode: row.zipcode,
-  });
+  const current = mapAddress(row); 
   const permanent = mapAddress(permanentRow);
 
   return {
@@ -402,7 +462,7 @@ function buildFormData(row, permanentRow, guardians = [], disabilityRows = []) {
     withLRN: Boolean(row.lrn),
     returning: toBool(row.returnee),
     lrn: row.lrn,
-    psaBirthCertNo: "", // no column in the schema
+    psaBirthCertNo: "", 
     lastName: row.last_name,
     firstName: row.first_name,
     middleName: row.middle_name,
@@ -425,7 +485,6 @@ function buildFormData(row, permanentRow, guardians = [], disabilityRows = []) {
   };
 }
 
-// Looks up ONE student that belongs to this adviser. Throws an error with .status = 404 if not found.
 async function generateRegistrationForm(studentId, adviserId) {
   const row = studentStmt.get(studentId, adviserId);
   if (!row) {
@@ -433,81 +492,12 @@ async function generateRegistrationForm(studentId, adviserId) {
     err.status = 404;
     throw err;
   }
+
   const permanentRow = permanentAddressStmt.get(row.id);
   const guardians = guardiansStmt.all(row.id);
   const disabilityRows = disabilitiesStmt.all(row.id);
+
   return renderRegistrationForm(buildFormData(row, permanentRow, guardians, disabilityRows));
 }
 
-// ---------- main ----------
-
-async function renderRegistrationForm(data = {}) {
-  const pdf = await PDFDocument.create();
-  const page = pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-  const ctx = {
-    page,
-    font: await pdf.embedFont(StandardFonts.Helvetica),
-    bold: await pdf.embedFont(StandardFonts.HelveticaBold),
-  };
-
-  drawHeader(ctx, data);
-  let top = drawLearnerInfo(ctx, data);
-  top = drawAddresses(ctx, data, top);
-  top = drawGuardians(ctx, data, top + 6);
-
-  // one big outer border around everything below the instructions
-  const outerTop = 114;
-  const h = top + 6 - outerTop;
-  page.drawRectangle({
-    x: 30,
-    y: yOf(outerTop, h),
-    width: 552,
-    height: h,
-    borderWidth: 1,
-    borderColor: BLACK,
-  });
-
-  return Buffer.from(await pdf.save());
-}
-
 module.exports = { generateRegistrationForm, renderRegistrationForm, buildFormData };
-
-// Run directly (node registration.js) to write a sample PDF.
-if (require.main === module) {
-  const fs = require("fs");
-  renderRegistrationForm({
-    schoolYear: "2026-2027",
-    gradeLevel: "08",
-    withLRN: true,
-    returning: false,
-    lrn: "108188180016",
-    lastName: "Corrales",
-    firstName: "Princess Arika",
-    middleName: "Corrales",
-    extensionName: "",
-    birthDate: "2013-04-20",
-    sex: "Female",
-    placeOfBirth: "Alaminos, Laguna",
-    motherTongue: "Filipino",
-    ipCommunity: false,
-    fourPs: false,
-    hasDisability: false,
-    disabilities: [],
-    currentAddress: {
-      houseNo: "123",
-      street: "St. Joseph Home, Marcelino",
-      barangay: "Brgy. Uno",
-      city: "Alaminos",
-      province: "Laguna",
-      country: "Philippines",
-      zip: "4001",
-    },
-    permanentSameAsCurrent: true,
-    father: { lastName: "Ilagan", firstName: "Edison", middleName: "De Lion", contact: "09511247064" },
-    mother: { lastName: "Corrales", firstName: "Mila", middleName: "Artiaga", contact: "09511247064" },
-    guardian: { lastName: "Ilagan", firstName: "Edison", middleName: "De Lion", contact: "09511247064" },
-  }).then((buf) => {
-    fs.writeFileSync("registration-test.pdf", buf);
-    console.log("wrote registration-test.pdf");
-  });
-}
